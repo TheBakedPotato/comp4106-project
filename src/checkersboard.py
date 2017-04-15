@@ -1,4 +1,4 @@
-
+from position import Position
 
 class CheckersBoard:
     
@@ -9,14 +9,14 @@ class CheckersBoard:
 
 
     def createBoard(self):
-        numPieces = ((self.size / 2) - 1) * (self.size / 2)
+        blackYLimit = (self.size / 2) - 1
+        whiteYLimit = (self.size / 2) + 1
         currCount = 0
         for y in range(self.size):
             for x in range(self.size):
                 if ((x - y) % 2 == 1):
-                    tilePos = (x,y)
-                    self.board[tilePos] = "B"
-                    currCount += 1
-
-            if currCount == numPieces:
-                break
+                    pos = Position(x,y)
+                    if y < blackYLimit:
+                        self.board[pos] = "B"
+                    elif y >= whiteYLimit:
+                        self.board[pos] = "W"

@@ -1,5 +1,7 @@
 from texttable import Texttable
 
+from position import Position
+
 class TextUI:
 
     def __init__(self):
@@ -16,11 +18,11 @@ class TextUI:
         for y in range(board.size):
             newRow = [y]
             for x in range(board.size):
-                pos = (x,y)
+                pos = Position(x,y)
                 if pos in board.board:
                     newRow.append(board.board[pos])
                 else:
-                    newRow.append("e")
+                    newRow.append("")
 
             textBoard.add_row(newRow)
 
