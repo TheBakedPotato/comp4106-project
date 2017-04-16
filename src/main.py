@@ -27,6 +27,9 @@ while running:
 
     game.applyMove(human1, column)
 
+    if game.gameOver():
+        print("Game Over")
+
     # ui.drawBoard(game.board)
 
     # column = None

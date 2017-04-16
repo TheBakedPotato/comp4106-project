@@ -16,7 +16,6 @@ class TextUI:
         textBoard.header(header)
         rows = []
 
-        # Iterating through the columns in reverse
         for tableRow in range(board.ySize):
             rows.append([])
             boardRow = board.ySize - tableRow - 1
