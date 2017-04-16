@@ -1,4 +1,5 @@
 from position import Position
+from gamepiece import GamePiece
 
 class CheckersBoard:
     
@@ -17,6 +18,28 @@ class CheckersBoard:
                 if ((x - y) % 2 == 1):
                     pos = Position(x,y)
                     if y < blackYLimit:
-                        self.board[pos] = "B"
+                        self.board[pos] = GamePiece("B", [1])
                     elif y >= whiteYLimit:
-                        self.board[pos] = "W"
+                        self.board[pos] = GamePiece("W", [-1])
+
+
+    def validXorY(self, xOrY):
+        return (xOrY < self.size) and (xOrY >= 0)
+
+
+    def validPosition(self, pos):
+        return self.validXorY(pos.x) and self.validXorY(pos.y)
+
+
+    def validPlayerPos(self, player, pos):
+        if pos in self.board:
+            return self.board[pos].color == player.color
+        
+        return False
+
+
+    # def completeJump(self, player, startPos, endPos):
+    #     if (startPos.x - endPos.x) != 2:
+    #         return False
+
+    #     

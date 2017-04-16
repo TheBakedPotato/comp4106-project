@@ -2,6 +2,5 @@
 
 class Player:
 
-    def __init__(self, color, direction):
+    def __init__(self, color):
         self.color = color
-        self.direction = direction

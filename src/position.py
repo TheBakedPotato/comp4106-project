@@ -34,3 +34,7 @@ class Position:
 
     def __hash__(self):
         return self.hashCode
+
+
+    def __str__(self):
+        return "({}, {})".format(self.x, self.y)
