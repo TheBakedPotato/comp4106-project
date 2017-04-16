@@ -9,22 +9,28 @@ class TextUI:
 
     def drawBoard(self, board):
         textBoard = Texttable()
-        header = [""]
-        for i in range(board.size):
+        header = []
+        for i in range(board.xSize):
             header.append(i)
 
         textBoard.header(header)
+        rows = []
+        for y in range(0, board.ySize):
+            rows.append([])
 
-        for y in range(board.size):
-            newRow = [y]
-            for x in range(board.size):
-                pos = Position(x,y)
-                if pos in board.board:
-                    newRow.append(board.board[pos].color)
-                else:
-                    newRow.append("")
+        # Iterating through the columns in reverse
+        for y in range(board.ySize - 1, -1, -1):
+            rowNum = board.ySize - y - 1
+            for x in range(board.xSize):
+                currColumn = board.board[x]
+                value = ""
+                if len(currColumn) >= (y + 1):
+                    value = currColumn[rowNum]
 
-            textBoard.add_row(newRow)
+                rows[y].append(value)
+
+        for row in rows:
+            textBoard.add_row(row)
 
         return textBoard
 

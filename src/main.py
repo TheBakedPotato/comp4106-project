@@ -1,26 +1,26 @@
 #!/usr/bin/python3
 
 from textui import TextUI
-from checkersboard import CheckersBoard
+from connectfourgame import ConnectFourGame
 from aiplayer import AIPlayer
 from player import Player
 
 ui = TextUI()
 colors = ["B", "W"]
-board = CheckersBoard(8, colors)
-ai = AIPlayer(colors[0])
+game = ConnectFourGame(7, 6)
+# ai = AIPlayer(colors[0])
 human = Player(colors[1])
 
 
 running = True
 
 while running:
-    textBoard = ui.drawBoard(board)
+    textBoard = ui.drawBoard(game.board)
     print(textBoard.draw())
 
-    moves = board.playerMoves(human)
-    for move in moves:
-        print("Start {}, End {}".format(move.startPos, move.endPos))
+    # moves = board.playerMoves(human)
+    # for move in moves:
+    #     print("Start {}, End {}".format(move.startPos, move.endPos))
 
     # startPos = ui.getStartPos()
 
