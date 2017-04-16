@@ -6,9 +6,10 @@ from aiplayer import AIPlayer
 from player import Player
 
 ui = TextUI()
-board = CheckersBoard(8)
-ai = AIPlayer("B")
-human = Player("W")
+colors = ["B", "W"]
+board = CheckersBoard(8, colors)
+ai = AIPlayer(colors[0])
+human = Player(colors[1])
 
 
 running = True
@@ -16,6 +17,10 @@ running = True
 while running:
     textBoard = ui.drawBoard(board)
     print(textBoard.draw())
+
+    moves = board.playerMoves(human)
+    for move in moves:
+        print("Start {}, End {}".format(move.startPos, move.endPos))
 
     # startPos = ui.getStartPos()
 
@@ -26,8 +31,8 @@ while running:
 
     # endPos = ui.getEndPos()
 
-    moves = ai.productionSystem(board)
-    for move in moves:
-        print("Start Pos: {}, End Pos: {}".format(move.startPos, move.endPos))
+    # moves = ai.productionSystem(board)
+    # for move in moves:
+    #     print("Start Pos: {}, End Pos: {}".format(move.startPos, move.endPos))
 
     running = False

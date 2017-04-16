@@ -66,3 +66,9 @@ class AIPlayer(Player):
             return None
 
         return newPos
+
+
+    def move(self, board):
+        moves = self.productionSystem(board)
+
+        return moves[0]
