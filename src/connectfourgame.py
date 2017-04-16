@@ -11,21 +11,27 @@ class ConnectFourGame:
         return len(self.board[column]) < self.board.ySize
 
 
-    def hasHorizontalRow(self, xPos, yPos):
+    def hasHorizontalRow(self, xPos, yPos, rowSize):
+        if not self.board.hasGamePiece(xPos, yPos) or (self.board.xSize - xPos) < rowSize:
+            return False
+
         pieceColor = self.board[xPos][yPos]
-        for newXPos in range(xPos + 1, xPos + 4):
-            if len(self.board[newXPos]) == 0 or (newXPos >= self.board.xSize) or (self.board[newXPos][yPos] != pieceColor):
+        for newXPos in range(xPos + 1, xPos + rowSize):
+            if not self.board.hasGamePiece(newXPos, yPos) or (self.board[newXPos][yPos] != pieceColor):
                 return False
 
         return True
 
 
     def hasVerticalRow(self, xPos, yPos):
-        if len(self.board[xPos]) == 0:
-            return False
+        pass
 
 
     def gameOver(self):
+        # MAYBE PUT THIS AS CLASS ATTRIBUTE?
+        rowSize = 4
+        ####################################
+
         numFullColumns = 0
         for column in self.board.board:
             if len(column) == self.board.ySize:
@@ -34,12 +40,15 @@ class ConnectFourGame:
         if numFullColumns == self.board.xSize:
             return True
 
+        gameOver = False
+
         for y in range(self.board.ySize):
             for x in range(self.board.xSize):
-                if len(self.board[x]) > y:
-                    return self.hasHorizontalRow(x, y)
+                gameOver = gameOver or self.hasHorizontalRow(x, y, rowSize)
+                if (len(self.board[x]) - y - 1) > 4:
+                    gameOver = gameOver or self.hasVerticalRow(x, y)
 
-        return False
+        return gameOver
 
 
     def applyMove(self, player, column):
