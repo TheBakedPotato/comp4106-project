@@ -8,28 +8,36 @@ class ConnectFourGame:
 
 
     def validColumn(self, column):
-        return len(self.board[column]) < self.board.ySize
+        return self.board.validColumn(column)
 
 
-    def hasHorizontalRow(self, xPos, yPos, rowSize):
-        if not self.board.hasGamePiece(xPos, yPos) or (self.board.xSize - xPos) < rowSize:
+    def hasHorizontalLine(self, xPos, yPos, lineSize):
+        if not self.board.hasGamePiece(xPos, yPos) or (self.board.xSize - xPos) < lineSize:
             return False
 
         pieceColor = self.board[xPos][yPos]
-        for newXPos in range(xPos + 1, xPos + rowSize):
+        for newXPos in range(xPos + 1, xPos + lineSize):
             if not self.board.hasGamePiece(newXPos, yPos) or (self.board[newXPos][yPos] != pieceColor):
                 return False
 
         return True
 
 
-    def hasVerticalRow(self, xPos, yPos):
-        pass
+    def hasVerticalLine(self, xPos, yPos, lineSize):
+        if not self.board.hasGamePiece(xPos, yPos) or (self.board.ySize - yPos) < lineSize:
+            return False
+
+        pieceColor = self.board[xPos][yPos]
+        for newYPos in range(yPos + 1, yPos + lineSize):
+            if not self.board.hasGamePiece(xPos, newYPos) or (self.board[xPos][newYPos] != pieceColor):
+                return False
+
+        return True
 
 
     def gameOver(self):
         # MAYBE PUT THIS AS CLASS ATTRIBUTE?
-        rowSize = 4
+        lineSize = 4
         ####################################
 
         numFullColumns = 0
@@ -44,12 +52,14 @@ class ConnectFourGame:
 
         for y in range(self.board.ySize):
             for x in range(self.board.xSize):
-                gameOver = gameOver or self.hasHorizontalRow(x, y, rowSize)
-                if (len(self.board[x]) - y - 1) > 4:
-                    gameOver = gameOver or self.hasVerticalRow(x, y)
+                gameOver = gameOver or self.hasHorizontalLine(x, y, lineSize)
+                gameOver = gameOver or self.hasVerticalLine(x, y, lineSize)
+                if gameOver:
+                    return True
 
-        return gameOver
+        return False
 
 
     def applyMove(self, player, column):
         self.board[column].append(player.color)
+

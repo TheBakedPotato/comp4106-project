@@ -25,6 +25,13 @@ class ConnectFourBoard:
         return xValue >= 0 and xValue < self.xSize
 
 
+    def validColumn(self, column):
+        if self.validXValue(column):
+            return len(self.board[column]) < self.ySize
+
+        return False
+
+
     def hasGamePiece(self, xPos, yPos):
         if self.validXValue(xPos) and self.validYValue(yPos):
             return len(self.board[xPos]) > yPos
