@@ -6,37 +6,32 @@ from aiplayer import AIPlayer
 from player import Player
 
 ui = TextUI()
-colors = ["B", "W"]
+colors = [ "B", "W" ]
 game = ConnectFourGame(7, 6)
 # ai = AIPlayer(colors[0])
 human1 = Player(colors[1])
 human2 = Player(colors[0])
 
 
+players = [ human1, human2 ]
+
 running = True
 
 while running:
-    ui.drawBoard(game.board)
 
-    column = None
-    while column is None:
-        column = ui.getColumn()
-        if not game.validColumn(column):
-            ui.invalidColumn(column)
-            column = None
+    for player in players:
+        ui.displayPlayersTurn(player)
+        ui.drawBoard(game.board)
+        column = None
+        while column is None:
+            column = ui.getColumn()
+            if not game.validColumn(column):
+                ui.invalidColumn(column)
+                column = None
 
-    game.applyMove(human1, column)
+        game.applyMove(player, column)
 
-    if game.gameOver():
-        print("Game Over")
-
-    # ui.drawBoard(game.board)
-
-    # column = None
-    # while column is None:
-    #     column = ui.getColumn()
-    #     if not game.validColumn(column):
-    #         ui.invalidColumn(column)
-    #         column = None
-
-    # game.applyMove(human2, column)
+        if game.gameOver():
+            print("Game Over")
+            ui.drawBoard(game.board)
+            running = False

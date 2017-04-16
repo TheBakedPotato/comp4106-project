@@ -53,3 +53,7 @@ class TextUI:
     def invalidColumn(self, column):
         print("{} is an invalid column. Please try again".format(column))
 
+
+    def displayPlayersTurn(self, player):
+        print("{}'s TURN".format(player.color))
+

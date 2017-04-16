@@ -35,6 +35,21 @@ class ConnectFourGame:
         return True
 
 
+    # Direction indicates the diagonal going left or right. 1 == right, -1 == left
+    def hasDiagonalLine(self, xPos, yPos, lineSize, direction=1):
+        if not self.board.hasGamePiece(xPos, yPos) or (self.board.ySize - yPos) < lineSize:
+            return False
+
+        pieceColor = self.board[xPos][yPos]
+        for delta in range(1, lineSize):
+            newXPos = xPos + (direction * delta)
+            newYPos = yPos + delta
+            if not self.board.hasGamePiece(newXPos, newYPos) or (self.board[newXPos][newYPos] != pieceColor):
+                return False
+
+        return True
+
+
     def gameOver(self):
         # MAYBE PUT THIS AS CLASS ATTRIBUTE?
         lineSize = 4
@@ -54,6 +69,10 @@ class ConnectFourGame:
             for x in range(self.board.xSize):
                 gameOver = gameOver or self.hasHorizontalLine(x, y, lineSize)
                 gameOver = gameOver or self.hasVerticalLine(x, y, lineSize)
+                # Checks diagonal lines up and right
+                gameOver = gameOver or self.hasDiagonalLine(x, y, lineSize)
+                # Checks diagonal lines up and left
+                gameOver = gameOver or self.hasDiagonalLine(x, y, lineSize, -1)
                 if gameOver:
                     return True
 
@@ -62,4 +81,3 @@ class ConnectFourGame:
 
     def applyMove(self, player, column):
         self.board[column].append(player.color)
-
