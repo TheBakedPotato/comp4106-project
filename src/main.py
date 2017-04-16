@@ -9,30 +9,31 @@ ui = TextUI()
 colors = ["B", "W"]
 game = ConnectFourGame(7, 6)
 # ai = AIPlayer(colors[0])
-human = Player(colors[1])
+human1 = Player(colors[1])
+human2 = Player(colors[0])
 
 
 running = True
 
 while running:
-    textBoard = ui.drawBoard(game.board)
-    print(textBoard.draw())
+    ui.drawBoard(game.board)
 
-    # moves = board.playerMoves(human)
-    # for move in moves:
-    #     print("Start {}, End {}".format(move.startPos, move.endPos))
+    column = None
+    while column is None:
+        column = ui.getColumn()
+        if not game.validColumn(column):
+            ui.invalidColumn(column)
+            column = None
 
-    # startPos = ui.getStartPos()
+    game.applyMove(human1, column)
 
-    # if board.validPlayerPos(human, startPos):
-    #     print("Valid Selection")
-    # else:
-    #     ui.invalidPosition(startPos)
+    # ui.drawBoard(game.board)
 
-    # endPos = ui.getEndPos()
+    # column = None
+    # while column is None:
+    #     column = ui.getColumn()
+    #     if not game.validColumn(column):
+    #         ui.invalidColumn(column)
+    #         column = None
 
-    # moves = ai.productionSystem(board)
-    # for move in moves:
-    #     print("Start Pos: {}, End Pos: {}".format(move.startPos, move.endPos))
-
-    running = False
+    # game.applyMove(human2, column)

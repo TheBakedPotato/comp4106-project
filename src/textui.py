@@ -15,52 +15,42 @@ class TextUI:
 
         textBoard.header(header)
         rows = []
-        for y in range(0, board.ySize):
-            rows.append([])
 
         # Iterating through the columns in reverse
-        for y in range(board.ySize - 1, -1, -1):
-            rowNum = board.ySize - y - 1
+        for tableRow in range(board.ySize):
+            rows.append([])
+            boardRow = board.ySize - tableRow - 1
             for x in range(board.xSize):
-                currColumn = board.board[x]
+                currColumn = board[x]
                 value = ""
-                if len(currColumn) >= (y + 1):
-                    value = currColumn[rowNum]
-
-                rows[y].append(value)
+                if len(currColumn) > boardRow:
+                    value = currColumn[boardRow]
+                rows[tableRow].append(value)
 
         for row in rows:
             textBoard.add_row(row)
 
-        return textBoard
+        print(textBoard.draw())
 
 
-    def getPos(self, startOrEnd):
-        pos = None
+    def getColumn(self):
+        column = None
 
-        while pos is None:
+        while column is None:
             try:
-                data = input("Enter the {} pos: ".format(startOrEnd))
-                pos = tuple(int(x.strip()) for x in data.split(','))
+                data = input("Enter the column number: ")
+                column = int(data)
             except ValueError:
                 self.invalidInput(data)
-                pos = None
+                column = None
         
-        return Position(pos[0], pos[1])
-
-
-    def getStartPos(self):
-        return self.getPos("Start")
-
-
-    def getEndPos(self):
-        return self.getPos("End")
+        return column
 
 
     def invalidInput(self, data):
         print("{} is an invalid input. Please try again.".format(data))
 
 
-    def invalidPosition(self, pos):
-        print("{} is an invalid position. Please try again".format((pos.x, pos.y)))
+    def invalidColumn(self, column):
+        print("{} is an invalid column. Please try again".format(column))
 

@@ -8,3 +8,10 @@ class ConnectFourBoard:
         self.board = []
         for i in range(0, self.xSize):
             self.board.append([])
+        # self.board.append("SELPPA")
+        # self.board.append("DEZZUB")
+        # self.board.append("EZLLUP")
+
+
+    def __getitem__(self, index):
+        return self.board[index]
