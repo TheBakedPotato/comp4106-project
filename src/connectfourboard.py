@@ -92,20 +92,49 @@ class ConnectFourBoard:
         return lineColor
 
 
-    def horizontalFork(self, xPos, yPos, lineSize, minSize):
-        if self.hasGamePiece(xPos, yPos) or ((self.xSize - xPos) < minSize):
+    def horizontalFork(self, xPos, yPos, forkMaxSize, forkMinSize):
+        if self.hasGamePiece(xPos, yPos) or ((self.xSize - xPos) < forkMinSize):
             return None
 
         lineColor = None
-        for delta in range(1, lineSize):
+        for delta in range(1, forkMaxSize):
             newXPos = xPos + delta
             if self.hasGamePiece(newXPos, yPos):
                 if lineColor is None:
                     lineColor = self.board[newXPos][yPos]
                 elif lineColor != self.board[newXPos][yPos]:
                     return None
-            else:
-                if (delta != minSize) or (delta != lineSize):
-                    return None
+            elif not (delta >= (forkMinSize - 1) and delta <= (forkMaxSize - 1)):
+                return None
 
         return lineColor
+
+
+    # def verticalFork(self, xPos, yPos, forkMaxSize, forkMinSize):
+    #     if self.hasGamePiece(xPos, yPos) or ((self.ySize - yPos) < forkMinSize):
+    #         return None
+
+    #     lineColor = None
+    #     for delta in range(1, forkMaxSize):
+    #         newYPos = yPos + delta
+    #         if self.hasGamePiece(xPos, newYPos):
+    #             if lineColor is None:
+    #                 lineColor = self.board[xPos][newYPos]
+    #             elif lineColor != self.board[xPos][newYPos]:
+    #                 return None
+    #         elif not (delta >= (forkMinSize - 1) and delta <= (forkMaxSize - 1)):
+    #             return None
+
+    #     return lineColor
+
+
+    # def diagonalFork(self, xPos, yPos, forkMaxSize, forkMinSize):
+    #     maxX = 0
+    #     if direction > 0:
+    #         maxX = self.xSize - xPos
+    #     else:
+    #         maxX = xPos + 1
+    #     if self.hasGamePiece(xPos, yPos) or ((self.ySize - yPos) < forkMinSize) or (maxX < forkMinSize):
+    #         return None
+
+        

@@ -126,16 +126,21 @@ class ConnectFourGame:
 
 
     def checkPlayerForks(self):
-        lineSize = 5
-        minSize = 4
+        forkMaxSize = 5
+        forkMinSize = 4
         playerValues = {}
         for player in self.players:
             playerValues[player.color] = 0
 
-        for yPos in range(self.boardySize):
+        for yPos in range(self.board.ySize):
             for xPos in range(self.board.xSize):
                 color = None
-                color = self.board.horizontalFork(xPos, yPos, lineSize, minSize)
+                color = self.board.horizontalFork(xPos, yPos, forkMaxSize, forkMinSize)
+                if color:
+                    playerValues[color] += 1
+
+                color = None
+                color = self.board.verticalFork(xPos, yPos, forkMaxSize, forkMinSize)
                 if color:
                     playerValues[color] += 1
 
