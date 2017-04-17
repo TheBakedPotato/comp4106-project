@@ -13,8 +13,10 @@ colors = [ "B", "W" ]
 human1 = Player(colors[1])
 human2 = Player(colors[0])
 simpleAI = AIPlayer(colors[0], 1)
+mmAI = AIPlayer(colors[1], 3)
 # players = [ human1, human2 ]
-players = [ human1, simpleAI ]
+# players = [ human1, mmAI ]
+players = [ simpleAI, mmAI ]
 game = ConnectFourGame(players, 7, 6)
 
 running = True

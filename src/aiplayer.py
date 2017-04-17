@@ -21,7 +21,7 @@ class AIPlayer(Player):
         return moves
 
 
-    def simpleHeuristic(self, player, game, oldOpenLineValues):
+    def simpleHeuristic(self, game, oldOpenLineValues):
         # if game.gameOver and game.winner == self:
         #     return float("inf")
 
@@ -51,13 +51,42 @@ class AIPlayer(Player):
                - (weightForks * opponentForks)
 
     
-    def maxValue(self):
-        pass
+    def maxValue(self, game, oldOpenLineValues, depth, alpha, beta):
+        if (depth == 0) or (game.gameOver):
+            return self.simpleHeuristic(game, oldOpenLineValues)
+
+        value = float("-inf")
+        oldOpenLineValues = game.checkPlayerOpenLines()
+        for currMove in self.productionSystem(game):
+            currGame = game.copy()
+            currGame.applyMove(currMove)
+            value = max(value, self.minValue(currGame, oldOpenLineValues, depth - 1, alpha, beta))
+            if value >= beta:
+                return value
+
+            alpha = max(value, alpha)
+
+        return value
 
 
     def minValue(self, game, oldOpenLineValues, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return self.simpleHeuristic()
+            return self.simpleHeuristic(game, oldOpenLineValues)
+
+        value = float("inf")
+        for playerIndex in range(len(game.players)):
+            if game.players[playerIndex] != self:
+                oldOpenLineValues = game.checkPlayerOpenLines()
+                for currMove in self.productionSystem(game, game.players[playerIndex]):
+                    currGame = game.copy()
+                    currGame.applyMove(currMove)
+                    value = min(value, self.maxValue(currGame, oldOpenLineValues, depth - 1, alpha, beta))
+                    if value <= alpha:
+                        return value
+
+                    beta = min(value, beta)
+
+        return value
 
 
     def move(self, game):
@@ -66,17 +95,24 @@ class AIPlayer(Player):
         alpha = float("-inf")
         beta = float("inf")
 
-        maxVal = float("-inf")
+        value = float("-inf")
         oldOpenLineValues = game.checkPlayerOpenLines()
         for currMove in self.productionSystem(game):
             currGame = game.copy()
-            print(currMove.player.color, currMove.column)
             currGame.applyMove(currMove)
-            currVal = self.simpleHeuristic(self, currGame, oldOpenLineValues)
-            # print("CurrMove: {}, CurrVal: {}".format(currMove, currVal))
-            if currVal > maxVal:
-                maxVal = currVal
+            currVal = self.minValue(currGame, oldOpenLineValues, self.searchDepth - 1, alpha, beta)
+            if move is None:
                 move = currMove
+                value = currVal
+            elif currVal > value:
+                value = currVal
+                move = currMove
+            # currVal = self.simpleHeuristic(self, currGame, oldOpenLineValues)
+            # print("CurrMove: {}, CurrVal: {}".format(currMove, currVal))
 
-        # print("MaxVal: {}".format(maxVal))
+            # if currVal > value:
+            #     value = currVal
+            #     move = currMove
+
+        # print("value: {}".format(value))
         return move
