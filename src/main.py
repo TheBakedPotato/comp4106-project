@@ -18,24 +18,47 @@ def simpleHeuristic(player, game):
 
 
 def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
-    color = board[xPos][yPos]
-    prevX = xPos + (-1 * direction)
+    # prevX = xPos + (-1 * direction)
     maxRunSize = 0
     if direction > 0:
         maxRunSize = board.xSize - xPos
     else:
         maxRunSize = xPos + 1
-    if (board.hasGamePiece(prevX, yPos) and (board[prevX][yPos] == color)) or (maxRunSize < lineSize):
+    if maxRunSize < lineSize:
         return False
 
-    foundEmptyTile = False
-    for newXPos in range(xPos + 1, xPos + lineSize):
-        if board.hasGamePiece(newXPos, yPos) and ((board[newXPos][yPos] != color) or foundEmptyTile):
-            return False
-        elif not board.hasGamePiece(newXPos, yPos):
-            foundEmptyTile = True
+    lineColor = None
+    for dX in range(0, lineSize):
+        newXPos = xPos + (dX * direction)
+        # if board.hasGamePiece(newXPos, yPos) and ((board[newXPos][yPos] != color) or foundEmptyTile):
+        if board.hasGamePiece(newXPos, yPos) and lineColor is None:
+            lineColor = board[newXPos][yPos]
+        elif board.hasGamePiece(newXPos, yPos) and (lineColor != board[newXPos][yPos]):
+            return None
 
-    return True
+    return lineColor
+
+
+# def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
+#     color = board[xPos][yPos]
+#     prevX = xPos + (-1 * direction)
+#     maxRunSize = 0
+#     if direction > 0:
+#         maxRunSize = board.xSize - xPos
+#     else:
+#         maxRunSize = xPos + 1
+#     if (board.hasGamePiece(prevX, yPos) and (board[prevX][yPos] == color)) or (maxRunSize < lineSize):
+#         return False
+
+#     foundEmptyTile = False
+#     for dX in range(1, lineSize):
+#         newXPos = xPos + (dX * direction)
+#         if board.hasGamePiece(newXPos, yPos) and ((board[newXPos][yPos] != color) or foundEmptyTile):
+#             return False
+#         elif not board.hasGamePiece(newXPos, yPos):
+#             foundEmptyTile = True
+
+#     return True
 
 
 def checkPlayerOpenLines(game):
@@ -45,12 +68,13 @@ def checkPlayerOpenLines(game):
 
     for yPos in range(game.board.ySize):
         for xPos in range(game.board.xSize):
-            if game.board.hasGamePiece(xPos, yPos):
-                color = game.board[xPos][yPos]
-                if horizontalOpenLine(game.board, xPos, yPos, 4):
-                    playerValues[color] += 1
-                # if horizontalOpenLine(game.board, xPos, yPos, 4, -1):
-                #     playerValues[color] += 1
+            # if game.board.hasGamePiece(xPos, yPos):
+            color = None
+            color = horizontalOpenLine(game.board, xPos, yPos, 4)
+            if color:
+                playerValues[color] += 1
+            # if horizontalOpenLine(game.board, xPos, yPos, 4, -1):
+            #     playerValues[color] += 1
 
     return playerValues
 
