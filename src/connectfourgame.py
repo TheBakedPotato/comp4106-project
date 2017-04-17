@@ -7,12 +7,16 @@ class ConnectFourGame:
         self.players = players
         self.playerIndex = 0
         self.board = ConnectFourBoard(xSize, ySize)
+        self.winner = None
+        self.gameOver = False
+
 
 
     def copy(self):
         newGame = ConnectFourGame(self.players, self.board.xSize, self.board.ySize)
         newGame.playerIndex = self.playerIndex
         newGame.board = self.board.copy()
+        newGame.gameOver = self.gameOver
 
         return newGame
 
@@ -60,7 +64,7 @@ class ConnectFourGame:
         return True
 
 
-    def gameOver(self):
+    def isGameOver(self):
         # MAYBE PUT THIS AS CLASS ATTRIBUTE?
         lineSize = 4
         ####################################
@@ -84,13 +88,17 @@ class ConnectFourGame:
                 # Checks diagonal lines up and left
                 gameOver = gameOver or self.hasDiagonalLine(x, y, lineSize, -1)
                 if gameOver:
+                    for player in self.players:
+                        if player.color == self.board[x][y]:
+                            self.winner = player
                     return True
 
         return False
 
 
-    def applyMove(self, player, column):
-        self.board[column].append(player.color)
+    def applyMove(self, move):
+        self.board[move.column].append(move.player.color)
+        self.gameOver = self.isGameOver()
 
 
     def getNextPlayer(self):

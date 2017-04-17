@@ -4,6 +4,7 @@ from textui import TextUI
 from connectfourgame import ConnectFourGame
 from aiplayer import AIPlayer
 from player import Player
+from move import Move
 
 
 #############################################################################################
@@ -20,29 +21,38 @@ running = True
 
 while running:
 
-    player = game.getNextPlayer()
-    ui.displayPlayersTurn(player)
-    ui.drawBoard(game.board)
-    column = player.move(game)
-    if column is None:
-        while column is None:
-            column = ui.getColumn()
-            if not game.validColumn(column):
-                ui.invalidColumn(column)
-                column = None
+    if not game.gameOver:
+        player = game.getNextPlayer()
+        ui.displayPlayersTurn(player)
+        ui.drawBoard(game.board)
+        move = player.move(game)
+        if move is None:
+            column = None
+            while column is None:
+                column = ui.getColumn()
+                if not game.validColumn(column):
+                    ui.invalidColumn(column)
+                    column = None
 
-    game.applyMove(player, column)
-    playerValues = game.checkPlayerOpenLines()
-    print("PLAYER OPEN LINE VALUES")
-    for player, value in playerValues.items():
-        print("Player: {}, Value: {}".format(player, value))
+            move = Move(player, column)
 
-    print("PLAYER FORK VALUES")
-    playerValues = game.checkPlayerForks()
-    for player, value in playerValues.items():
-        print("Player: {}, Value: {}".format(player, value))
+        game.applyMove(move)
+        # playerValues = game.checkPlayerOpenLines()
+        # print("PLAYER OPEN LINE VALUES")
+        # for player, value in playerValues.items():
+        #     print("Player: {}, Value: {}".format(player, value))
 
-    if game.gameOver():
+        # print("PLAYER FORK VALUES")
+        # playerValues = game.checkPlayerForks()
+        # for player, value in playerValues.items():
+        #     print("Player: {}, Value: {}".format(player, value))
+
+    else:
         print("Game Over")
+        if game.winner:
+            print("The winner is: {}!".format(game.winner.color))
+        else:
+            print("The game was a draw!")
+
         ui.drawBoard(game.board)
         running = False
