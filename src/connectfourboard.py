@@ -8,9 +8,16 @@ class ConnectFourBoard:
         self.board = []
         for i in range(0, self.xSize):
             self.board.append([])
-        # self.board.append("SELPPA")
-        # self.board.append("DEZZUB")
-        # self.board.append("EZLLUP")
+
+
+    def copy(self):
+        newBoard = ConnectFourBoard(self.xSize, self.ySize)
+        for column in range(0, self.xSize):
+            for row in range(0, self.ySize):
+                if self.hasGamePiece(column, row):
+                    newBoard.board[column].append(self.board[column][row])
+
+        return newBoard
 
 
     def __getitem__(self, index):
