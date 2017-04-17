@@ -3,7 +3,9 @@ from connectfourboard import ConnectFourBoard
 
 class ConnectFourGame:
 
-    def __init__(self, xSize, ySize):
+    def __init__(self, players, xSize, ySize):
+        self.players = players
+        self.playerIndex = 0
         self.board = ConnectFourBoard(xSize, ySize)
 
 
@@ -81,3 +83,12 @@ class ConnectFourGame:
 
     def applyMove(self, player, column):
         self.board[column].append(player.color)
+
+
+    def getNextPlayer(self):
+        nextPlayer = self.players[self.playerIndex]
+        self.playerIndex += 1
+        if self.playerIndex >= len(self.players):
+            self.playerIndex = 0
+
+        return nextPlayer
