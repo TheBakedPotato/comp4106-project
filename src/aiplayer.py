@@ -19,21 +19,46 @@ class AIPlayer(Player):
         return moves
 
 
-    def simpleHeuristic(self, player, game):
+    def simpleHeuristic(self, player, game, oldOpenLineValues):
         weightPlayerOpenLines = 1
-        weightPlayerForks = 1
-        weightOppoentClosedOpenLines = 1
-        weightOpponentForks = 1
+        weightOppoentOpenLines = 5
+        weightForks = 5
 
+        playerLines = 0
+        closedOpponentLines = 0
+        playerForks = 0
+        opponentForks = 0
 
+        openLineValues = game.checkPlayerOpenLines()
+        forkValues = game.checkPlayerForks()
 
-        return 0
+        for player in game.players:
+            if self == player:
+                playerLines += openLineValues[self.color]
+                playerForks += forkValues[self.color]
+            else:
+                opponentForks += forkValues[player.color]
+                closedOpponentLines = oldOpenLineValues[player.color] - openLineValues[player.color]
+
+        return (weightPlayerOpenLines * playerLines) \
+               + (weightForks * playerForks) \
+               + (weightOppoentOpenLines * closedOpponentLines) \
+               - (weightForks * opponentForks)
 
 
     def move(self, game):
         move = None
         moves = self.productionSystem(game)
-        if len(moves) > 0:
-            move = moves[0]
+        maxVal = float("-inf")
+        oldOpenLineValues = game.checkPlayerOpenLines()
+        for currMove in moves:
+            currGame = game.copy()
+            currGame.applyMove(self, currMove)
+            currVal = self.simpleHeuristic(self, currGame, oldOpenLineValues)
+            print("CurrMove: {}, CurrVal: {}".format(currMove, currVal))
+            if currVal > maxVal:
+                maxVal = currVal
+                move = currMove
 
+        print("MaxVal: {}".format(maxVal))
         return move

@@ -9,6 +9,14 @@ class ConnectFourGame:
         self.board = ConnectFourBoard(xSize, ySize)
 
 
+    def copy(self):
+        newGame = ConnectFourGame(self.players, self.board.xSize, self.board.ySize)
+        newGame.playerIndex = self.playerIndex
+        newGame.board = self.board.copy()
+
+        return newGame
+
+
     def validColumn(self, column):
         return self.board.validColumn(column)
 

@@ -12,8 +12,8 @@ colors = [ "B", "W" ]
 human1 = Player(colors[1])
 human2 = Player(colors[0])
 simpleAI = AIPlayer(colors[0], 1)
-players = [ human1, human2 ]
-# players = [ human1, simpleAI ]
+# players = [ human1, human2 ]
+players = [ human1, simpleAI ]
 game = ConnectFourGame(players, 7, 6)
 
 running = True
@@ -32,11 +32,15 @@ while running:
                 column = None
 
     game.applyMove(player, column)
-    # playerValues = game.checkPlayerOpenLines()
-    playerValues = game.checkPlayerForks()
+    playerValues = game.checkPlayerOpenLines()
+    print("PLAYER OPEN LINE VALUES")
     for player, value in playerValues.items():
         print("Player: {}, Value: {}".format(player, value))
 
+    print("PLAYER FORK VALUES")
+    playerValues = game.checkPlayerForks()
+    for player, value in playerValues.items():
+        print("Player: {}, Value: {}".format(player, value))
 
     if game.gameOver():
         print("Game Over")
