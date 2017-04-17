@@ -92,3 +92,51 @@ class ConnectFourGame:
             self.playerIndex = 0
 
         return nextPlayer
+
+
+    def checkPlayerOpenLines(self):
+        lineSize = 4
+        playerValues = {}
+        for player in self.players:
+            playerValues[player.color] = 0
+
+        for yPos in range(self.board.ySize):
+            for xPos in range(self.board.xSize):
+                color = None
+                color = self.board.horizontalOpenLine(xPos, yPos, lineSize)
+                if color:
+                    playerValues[color] += 1
+
+                color = None
+                color = self.board.verticalOpenLine(xPos, yPos, lineSize)
+                if color:
+                    playerValues[color] += 1
+
+                color = None
+                color = self.board.diagonalOpenLine(xPos, yPos, lineSize)
+                if color:
+                    playerValues[color] += 1
+
+                color = None
+                color = self.board.diagonalOpenLine(xPos, yPos, lineSize, -1)
+                if color:
+                    playerValues[color] += 1
+
+        return playerValues
+
+
+    def checkPlayerForks(self):
+        lineSize = 5
+        minSize = 4
+        playerValues = {}
+        for player in self.players:
+            playerValues[player.color] = 0
+
+        for yPos in range(self.boardySize):
+            for xPos in range(self.board.xSize):
+                color = None
+                color = self.board.horizontalFork(xPos, yPos, lineSize, minSize)
+                if color:
+                    playerValues[color] += 1
+
+        return playerValues

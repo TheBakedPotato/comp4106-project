@@ -93,13 +93,13 @@ class ConnectFourBoard:
 
 
     def horizontalFork(self, xPos, yPos, lineSize, minSize):
-        if self.hasPiece(xPos, yPos) or ((self.xSize - xPos) < minSize):
+        if self.hasGamePiece(xPos, yPos) or ((self.xSize - xPos) < minSize):
             return None
 
         lineColor = None
         for delta in range(1, lineSize):
             newXPos = xPos + delta
-            if self.hasPiece(newXPos, yPos):
+            if self.hasGamePiece(newXPos, yPos):
                 if lineColor is None:
                     lineColor = self.board[newXPos][yPos]
                 elif lineColor != self.board[newXPos][yPos]:
@@ -109,40 +109,3 @@ class ConnectFourBoard:
                     return None
 
         return lineColor
-
-
-    def checkPlayerOpenLines(self):
-        lineSize = 4
-        playerValues = {}
-
-        for yPos in range(self.ySize):
-            for xPos in range(self.xSize):
-                color = None
-                color = self.horizontalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    if color not in playerValues:
-                        playerValues[color] = 0
-                    playerValues[color] += 1
-
-                color = None
-                color = self.verticalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    if color not in playerValues:
-                        playerValues[color] = 0
-                    playerValues[color] += 1
-
-                color = None
-                color = self.diagonalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    if color not in playerValues:
-                        playerValues[color] = 0
-                    playerValues[color] += 1
-
-                color = None
-                color = self.diagonalOpenLine(xPos, yPos, lineSize, -1)
-                if color:
-                    if color not in playerValues:
-                        playerValues[color] = 0
-                    playerValues[color] += 1
-
-        return playerValues

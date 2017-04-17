@@ -32,7 +32,8 @@ while running:
                 column = None
 
     game.applyMove(player, column)
-    playerValues = game.board.checkPlayerOpenLines()
+    playerValues = game.checkPlayerOpenLines()
+    # playerValues = game.board.checkPlayerForks()
     for player, value in playerValues.items():
         print("Player: {}, Value: {}".format(player, value))
 
