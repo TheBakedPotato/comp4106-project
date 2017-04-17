@@ -7,15 +7,67 @@ from player import Player
 
 
 def simpleHeuristic(player, game):
-    weightPlayerLines = 1
+    weightPlayerOpenLines = 1
     weightPlayerForks = 1
-    weightOppoentClosedLines = 1
+    weightOppoentClosedOpenLines = 1
     weightOpponentForks = 1
 
 
 
     return 0
 
+
+def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
+    color = board[xPos][yPos]
+    prevX = xPos + (-1 * direction)
+    maxRunSize = 0
+    if direction > 0:
+        maxRunSize = board.xSize - xPos
+    else:
+        maxRunSize = xPos + 1
+    if (board.hasGamePiece(prevX, yPos) and (board[prevX][yPos] == color)) or (maxRunSize < lineSize):
+        return False
+
+    foundEmptyTile = False
+    for newXPos in range(xPos + 1, xPos + lineSize):
+        if board.hasGamePiece(newXPos, yPos) and ((board[newXPos][yPos] != color) or foundEmptyTile):
+            return False
+        elif not board.hasGamePiece(newXPos, yPos):
+            foundEmptyTile = True
+
+    return True
+
+
+def checkPlayerOpenLines(game):
+    playerValues = {}
+    for player in game.players:
+        playerValues[player.color] = 0
+
+    for yPos in range(game.board.ySize):
+        for xPos in range(game.board.xSize):
+            if game.board.hasGamePiece(xPos, yPos):
+                color = game.board[xPos][yPos]
+                if horizontalOpenLine(game.board, xPos, yPos, 4):
+                    playerValues[color] += 1
+                # if horizontalOpenLine(game.board, xPos, yPos, 4, -1):
+                #     playerValues[color] += 1
+
+    return playerValues
+
+
+# def checkPlayerLinesAndForks(game):
+#     playerValues = {}
+#     checkPositions = set()
+
+#     for lineSize in range(3, 1, -1):
+#         for yPos in game.board.ySize:
+#             for xPos in game.board.xSize:
+#                 if game.board.hasPiece(xPos, yPos) and (xPos, yPos) not in checkPositions:
+#                     checkPositions.add((xPos, yPos))
+#                     # if game.hasHorizontalLine(xPos, yPos, lineSize)
+
+
+#     return playerValues
 
 
 
@@ -25,8 +77,8 @@ colors = [ "B", "W" ]
 human1 = Player(colors[1])
 human2 = Player(colors[0])
 simpleAI = AIPlayer(colors[0], simpleHeuristic, 1)
-# players = [ human1, human2 ]
-players = [ human1, simpleAI ]
+players = [ human1, human2 ]
+# players = [ human1, simpleAI ]
 game = ConnectFourGame(players, 7, 6)
 
 running = True
@@ -45,6 +97,9 @@ while running:
                 column = None
 
     game.applyMove(player, column)
+    playerValues = checkPlayerOpenLines(game)
+    for player, value in playerValues.items():
+        print("Player: {}, Value: {}".format(player, value))
 
     if game.gameOver():
         print("Game Over")
