@@ -139,9 +139,14 @@ class ConnectFourGame:
                 if color:
                     playerValues[color] += 1
 
-                color = None
-                color = self.board.verticalFork(xPos, yPos, forkMaxSize, forkMinSize)
-                if color:
-                    playerValues[color] += 1
+                # color = None
+                # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize)
+                # if color:
+                #     playerValues[color] += 1
+
+                # color = None
+                # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize, -1)
+                # if color:
+                #     playerValues[color] += 1
 
         return playerValues

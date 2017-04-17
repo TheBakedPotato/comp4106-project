@@ -128,13 +128,27 @@ class ConnectFourBoard:
     #     return lineColor
 
 
-    # def diagonalFork(self, xPos, yPos, forkMaxSize, forkMinSize):
-    #     maxX = 0
-    #     if direction > 0:
-    #         maxX = self.xSize - xPos
-    #     else:
-    #         maxX = xPos + 1
-    #     if self.hasGamePiece(xPos, yPos) or ((self.ySize - yPos) < forkMinSize) or (maxX < forkMinSize):
-    #         return None
+    def diagonalFork(self, xPos, yPos, forkMaxSize, forkMinSize, direction=1):
+        maxX = 0
+        if direction > 0:
+            maxX = self.xSize - xPos
+        else:
+            maxX = xPos + 1
+        if self.hasGamePiece(xPos, yPos) or ((self.ySize - yPos) < forkMinSize) or (maxX < forkMinSize):
+            return None
 
-        
+        lineColor = None
+        for delta in range(1, forkMaxSize):
+            newXPos = xPos + (delta * direction)
+            newYPos = yPos + delta
+            if self.hasGamePiece(newXPos, newYPos):
+                if lineColor is None:
+                    lineColor = self.board[newXPos][newYPos]
+                elif lineColor != self.board[newXPos][newYPos]:
+                    return None
+            elif not (delta >= (forkMinSize - 1) and delta <= (forkMaxSize - 1)):
+                return None
+
+        return lineColor
+
+
