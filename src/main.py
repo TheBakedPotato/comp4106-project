@@ -17,18 +17,13 @@ def simpleHeuristic(player, game):
     return 0
 
 
-def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
-    maxRunSize = 0
-    if direction > 0:
-        maxRunSize = board.xSize - xPos
-    else:
-        maxRunSize = xPos + 1
-    if maxRunSize < lineSize:
+def horizontalOpenLine(board, xPos, yPos, lineSize):
+    if (board.xSize - xPos) < lineSize:
         return None
 
     lineColor = None
-    for dX in range(0, lineSize):
-        newXPos = xPos + (dX * direction)
+    for newXPos in range(xPos, xPos + lineSize):
+        # newXPos = xPos + (dX * direction)
         if board.hasGamePiece(newXPos, yPos) and (lineColor is None):
             lineColor = board[newXPos][yPos]
         elif board.hasGamePiece(newXPos, yPos) and (lineColor != board[newXPos][yPos]):
@@ -62,8 +57,8 @@ def diagonalOpenLine(board, xPos, yPos, lineSize, direction=1):
 
     lineColor = None
     for delta in range(0, lineSize):
-        newXPos = xPos + delta
-        newYPos = yPos + (delta * direction)
+        newXPos = xPos + (delta * direction)
+        newYPos = yPos + delta
 
         if board.hasGamePiece(newXPos, newYPos) and (lineColor is None):
             lineColor = board[newXPos][newYPos]
@@ -72,6 +67,17 @@ def diagonalOpenLine(board, xPos, yPos, lineSize, direction=1):
 
     return lineColor
 
+
+def horizontalFork(board, xPos, yPos, lineSize):
+    if board.hasPiece(xPos, yPos) or ((board.xSize - xPos) < minLineSize):
+        return None
+
+    lineColor = None
+    for newXPos in range(xPos + 1, xPos + lineSize):
+        if board.hasPiece(newXPos, yPos):
+            continue
+
+    return lineColor
 
 # def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
 #     color = board[xPos][yPos]
