@@ -18,22 +18,34 @@ def simpleHeuristic(player, game):
 
 
 def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
-    # prevX = xPos + (-1 * direction)
     maxRunSize = 0
     if direction > 0:
         maxRunSize = board.xSize - xPos
     else:
         maxRunSize = xPos + 1
     if maxRunSize < lineSize:
-        return False
+        return None
 
     lineColor = None
     for dX in range(0, lineSize):
         newXPos = xPos + (dX * direction)
-        # if board.hasGamePiece(newXPos, yPos) and ((board[newXPos][yPos] != color) or foundEmptyTile):
-        if board.hasGamePiece(newXPos, yPos) and lineColor is None:
+        if board.hasGamePiece(newXPos, yPos) and (lineColor is None):
             lineColor = board[newXPos][yPos]
         elif board.hasGamePiece(newXPos, yPos) and (lineColor != board[newXPos][yPos]):
+            return None
+
+    return lineColor
+
+
+def verticalOpenLine(board, xPos, yPos, lineSize):
+    if (board.ySize - yPos) < lineSize:
+        return None
+
+    lineColor = None
+    for newYPos in range(yPos, yPos + lineSize):
+        if board.hasGamePiece(xPos, newYPos) and (lineColor is None):
+            lineColor = board[xPos][newYPos]
+        elif board.hasGamePiece(xPos, newYPos) and (lineColor != board[xPos][newYPos]):
             return None
 
     return lineColor
@@ -62,36 +74,24 @@ def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
 
 
 def checkPlayerOpenLines(game):
+    lineSize = 4
     playerValues = {}
     for player in game.players:
         playerValues[player.color] = 0
 
     for yPos in range(game.board.ySize):
         for xPos in range(game.board.xSize):
-            # if game.board.hasGamePiece(xPos, yPos):
             color = None
-            color = horizontalOpenLine(game.board, xPos, yPos, 4)
+            color = horizontalOpenLine(game.board, xPos, yPos, lineSize)
             if color:
                 playerValues[color] += 1
-            # if horizontalOpenLine(game.board, xPos, yPos, 4, -1):
-            #     playerValues[color] += 1
+
+            color = None
+            color = verticalOpenLine(game.board, xPos, yPos, lineSize)
+            if color:
+                playerValues[color] += 1
 
     return playerValues
-
-
-# def checkPlayerLinesAndForks(game):
-#     playerValues = {}
-#     checkPositions = set()
-
-#     for lineSize in range(3, 1, -1):
-#         for yPos in game.board.ySize:
-#             for xPos in game.board.xSize:
-#                 if game.board.hasPiece(xPos, yPos) and (xPos, yPos) not in checkPositions:
-#                     checkPositions.add((xPos, yPos))
-#                     # if game.hasHorizontalLine(xPos, yPos, lineSize)
-
-
-#     return playerValues
 
 
 
