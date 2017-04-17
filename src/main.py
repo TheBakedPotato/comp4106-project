@@ -51,6 +51,28 @@ def verticalOpenLine(board, xPos, yPos, lineSize):
     return lineColor
 
 
+def diagonalOpenLine(board, xPos, yPos, lineSize, direction=1):
+    maxX = 0
+    if direction > 0:
+        maxX = board.xSize - xPos
+    else:
+        maxX = xPos + 1
+    if ((board.ySize - yPos) < lineSize) or (maxX < lineSize):
+        return False
+
+    lineColor = None
+    for delta in range(0, lineSize):
+        newXPos = xPos + delta
+        newYPos = yPos + (delta * direction)
+
+        if board.hasGamePiece(newXPos, newYPos) and (lineColor is None):
+            lineColor = board[newXPos][newYPos]
+        elif board.hasGamePiece(newXPos, newYPos) and (lineColor != board[newXPos][newYPos]):
+            return None
+
+    return lineColor
+
+
 # def horizontalOpenLine(board, xPos, yPos, lineSize, direction=1):
 #     color = board[xPos][yPos]
 #     prevX = xPos + (-1 * direction)
@@ -88,6 +110,16 @@ def checkPlayerOpenLines(game):
 
             color = None
             color = verticalOpenLine(game.board, xPos, yPos, lineSize)
+            if color:
+                playerValues[color] += 1
+
+            color = None
+            color = diagonalOpenLine(game.board, xPos, yPos, lineSize)
+            if color:
+                playerValues[color] += 1
+
+            color = None
+            color = diagonalOpenLine(game.board, xPos, yPos, lineSize, -1)
             if color:
                 playerValues[color] += 1
 
