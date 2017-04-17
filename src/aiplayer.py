@@ -1,3 +1,5 @@
+import random
+
 from player import Player
 from move import Move
 from position import Position
@@ -57,7 +59,9 @@ class AIPlayer(Player):
 
         value = float("-inf")
         oldOpenLineValues = game.checkPlayerOpenLines()
-        for currMove in self.productionSystem(game):
+        moves = self.productionSystem(game)
+        random.shuffle(moves)
+        for currMove in moves:
             currGame = game.copy()
             currGame.applyMove(currMove)
             value = max(value, self.minValue(currGame, oldOpenLineValues, depth - 1, alpha, beta))
@@ -77,7 +81,9 @@ class AIPlayer(Player):
         for playerIndex in range(len(game.players)):
             if game.players[playerIndex] != self:
                 oldOpenLineValues = game.checkPlayerOpenLines()
-                for currMove in self.productionSystem(game, game.players[playerIndex]):
+                moves = self.productionSystem(game, game.players[playerIndex])
+                random.shuffle(moves)
+                for currMove in moves:
                     currGame = game.copy()
                     currGame.applyMove(currMove)
                     value = min(value, self.maxValue(currGame, oldOpenLineValues, depth - 1, alpha, beta))
@@ -97,7 +103,9 @@ class AIPlayer(Player):
 
         value = float("-inf")
         oldOpenLineValues = game.checkPlayerOpenLines()
-        for currMove in self.productionSystem(game):
+        moves = self.productionSystem(game)
+        random.shuffle(moves)
+        for currMove in moves:
             currGame = game.copy()
             currGame.applyMove(currMove)
             currVal = self.minValue(currGame, oldOpenLineValues, self.searchDepth - 1, alpha, beta)
