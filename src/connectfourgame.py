@@ -150,6 +150,76 @@ class ConnectFourGame:
         return False
 
 
+    def inLine(self, color, xPos, yPos, lineSize):
+        horizontalCount = 1
+        verticalCount = 1
+        forwardDiagCount = 1
+        backDiagCount = 1
+
+        foundLine = False
+
+        checkBack = True
+        checkForward = True
+
+        checkDown = True
+        checkUp = True
+
+        for delta in range(1, lineSize):
+            noLine = True
+
+            backX = xPos - delta
+            forwardX = xPos + delta
+
+            downY = yPos - delta
+            upY = yPos + delta
+
+            ###################################################################################################
+            # Checking the existence of a horizontal line
+            if checkBack and self.board.hasGamePiece(backX, yPos) and self.board[backX][yPos] == color:
+                horizontalCount += 1
+                noLine = False
+            else:
+                checkBack = False
+
+            if checkForward and self.board.hasGamePiece(forwardX, yPos) and self.board[forwardX][yPos] == color:
+                horizontalCount += 1
+                noLine = False
+            else:
+                checkForward = False
+
+            if horizontalCount >= lineSize:
+                foundLine = True
+            ####################################################################################################
+
+
+            ####################################################################################################
+            # Checking the existence of a vertical line
+            if checkDown and self.board.hasGamePiece(xPos, downY) and self.board[xPos][downY] == color:
+                verticalCount += 1
+                noLine = False
+            else:
+                checkDown = False
+
+            if checkUp and self.board.hasGamePiece(xPos, upY) and self.board[xPos][upY] == color:
+                verticalCount += 1
+                noLine = False
+            else:
+                checkUp = False
+
+            if verticalCount >= lineSize:
+                foundLine = True
+            ####################################################################################################
+
+
+            if foundLine:
+                return True
+            elif noLine:
+                return False
+
+        print("ERROR: CHECKING inLine")
+        return False
+
+
     def isGameOver(self, move):
         lineSize = 4
         numFullColumns = 0
@@ -160,7 +230,8 @@ class ConnectFourGame:
         xPos = move.column
         yPos = len(self.board[move.column]) - 1
         color = move.player.color
-        if self.inHorizontalLine(color, xPos, yPos, lineSize) or self.inVerticalLine(color, xPos, yPos, lineSize):
+        # if self.inHorizontalLine(color, xPos, yPos, lineSize) or self.inVerticalLine(color, xPos, yPos, lineSize):
+        if self.inLine(color, xPos, yPos, lineSize):
             self.winner = move.player
             return True
         elif numFullColumns == self.board.xSize:
