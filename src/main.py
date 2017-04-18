@@ -10,10 +10,10 @@ from move import Move
 #############################################################################################
 ui = TextUI()
 colors = [ "B", "W" ]
-human1 = Player(colors[1])
-human2 = Player(colors[0])
+human1 = Player(colors[0])
+human2 = Player(colors[1])
 simpleAI = AIPlayer(colors[0], 1)
-mmAI = AIPlayer(colors[1], 3)
+mmAI = AIPlayer(colors[1], 4)
 # players = [ human1, human2 ]
 # players = [ human1, mmAI ]
 players = [ simpleAI, mmAI ]

@@ -24,8 +24,11 @@ class AIPlayer(Player):
 
 
     def simpleHeuristic(self, game, oldOpenLineValues):
-        # if game.gameOver and game.winner == self:
-        #     return float("inf")
+        # if game.gameOver:
+        #     if game.winner == self:
+        #         return float("inf")
+        #     else:
+        #         return float("-inf")
 
         weightPlayerOpenLines = 1
         weightOppoentOpenLines = 5
@@ -109,12 +112,11 @@ class AIPlayer(Player):
             currGame = game.copy()
             currGame.applyMove(currMove)
             currVal = self.minValue(currGame, oldOpenLineValues, self.searchDepth - 1, alpha, beta)
-            if move is None:
+            if (move is None) or (currVal > value):
                 move = currMove
                 value = currVal
-            elif currVal > value:
-                value = currVal
-                move = currMove
+
+            alpha = max(value, alpha)
             # currVal = self.simpleHeuristic(self, currGame, oldOpenLineValues)
             # print("CurrMove: {}, CurrVal: {}".format(currMove, currVal))
 

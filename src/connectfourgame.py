@@ -101,6 +101,10 @@ class ConnectFourGame:
         self.gameOver = self.isGameOver()
 
 
+    def undoMove(self, move):
+        self.board[move.column].pop()
+
+
     def getNextPlayer(self):
         nextPlayer = self.players[self.playerIndex]
         self.playerIndex += 1
