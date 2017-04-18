@@ -9,17 +9,17 @@ from move import Move
 
 #############################################################################################
 ui = TextUI()
-colors = [ "B", "W" ]
+colors = [ "X", "O" ]
 human0 = Player(colors[0])
 human1 = Player(colors[1])
 simpleAI0 = AIPlayer(colors[0], 1)
 simpleAI1 = AIPlayer(colors[1], 1)
-mmAI = AIPlayer(colors[1], 10)
-players = [ human0, human1 ]
+mmAI1 = AIPlayer(colors[1], 10)
+# players = [ human0, human1 ]
 # players = [ human0, mmAI ]
 # players = [ simpleAI0, human1 ]
-# players = [ simpleAI0, simpleAI1 ]
-# players = [ simpleAI0, mmAI ]
+players = [ simpleAI0, simpleAI1 ]
+# players = [ simpleAI0, mmAI1 ]
 game = ConnectFourGame(players, 7, 6)
 
 running = True
