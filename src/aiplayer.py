@@ -25,7 +25,7 @@ class AIPlayer(Player):
 
     def simpleHeuristic(self, game, oldOpenLineValues):
         # if game.gameOver:
-        #     if game.winner == self:
+        #     if (game.winner is not None) and (game.winner == self):
         #         return float("inf")
         #     else:
         #         return float("-inf")
@@ -117,12 +117,7 @@ class AIPlayer(Player):
                 value = currVal
 
             alpha = max(value, alpha)
-            # currVal = self.simpleHeuristic(self, currGame, oldOpenLineValues)
             # print("CurrMove: {}, CurrVal: {}".format(currMove, currVal))
-
-            # if currVal > value:
-            #     value = currVal
-            #     move = currMove
 
         # print("value: {}".format(value))
         return move

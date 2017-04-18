@@ -15,7 +15,7 @@ class Player:
 
 
     def __ne__(self, other):
-        return not self.color == other.color
+        return not self == other
 
 
     def __hash__(self):
