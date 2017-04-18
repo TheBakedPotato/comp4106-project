@@ -153,8 +153,8 @@ class ConnectFourGame:
     def inLine(self, color, xPos, yPos, lineSize):
         horizontalCount = 1
         verticalCount = 1
-        forwardDiagCount = 1
-        backDiagCount = 1
+        downDiagCount = 1
+        upDiagCount = 1
 
         foundLine = False
 
@@ -163,6 +163,11 @@ class ConnectFourGame:
 
         checkDown = True
         checkUp = True
+
+        checkBackDown = True
+        checkBackUp = True
+        checkFowardDown = True
+        checkForwardUp = True
 
         for delta in range(1, lineSize):
             noLine = True
@@ -191,7 +196,6 @@ class ConnectFourGame:
                 foundLine = True
             ####################################################################################################
 
-
             ####################################################################################################
             # Checking the existence of a vertical line
             if checkDown and self.board.hasGamePiece(xPos, downY) and self.board[xPos][downY] == color:
@@ -210,6 +214,41 @@ class ConnectFourGame:
                 foundLine = True
             ####################################################################################################
 
+            ####################################################################################################
+            # Checking the existence of diagonal lines pointed foward up
+            if checkBackDown and self.board.hasGamePiece(backX, downY) and self.board[backX][downY] == color:
+                upDiagCount += 1
+                noLine = False
+            else:
+                checkBackDown = False
+
+            if checkForwardUp and self.board.hasGamePiece(forwardX, upY) and self.board[forwardX][upY] == color:
+                upDiagCount += 1
+                noLine = False
+            else:
+                checkForwardUp = False
+
+            if upDiagCount >= lineSize:
+                foundLine = True
+            ####################################################################################################
+
+            ####################################################################################################
+            # Checking the existence of diagonal lines pointed foward down
+            if checkBackUp and self.board.hasGamePiece(backX, upY) and self.board[backX][upY] == color:
+                downDiagCount += 1
+                noLine = False
+            else:
+                checkBackUp = False
+
+            if checkFowardDown and self.board.hasGamePiece(forwardX, downY) and self.board[forwardX][downY] == color:
+                downDiagCount += 1
+                noLine = False
+            else:
+                checkFowardDown = False
+
+            if downDiagCount >= lineSize:
+                foundLine = True
+            ####################################################################################################
 
             if foundLine:
                 return True
