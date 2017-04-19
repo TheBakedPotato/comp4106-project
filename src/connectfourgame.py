@@ -298,59 +298,92 @@ class ConnectFourGame:
         return nextPlayer
 
 
-    def checkPlayerOpenLines(self):
+    def playerHorizontalOpenLinesCount(self):
         lineSize = 4
         playerValues = {}
+        currColor = None
         for player in self.players:
             playerValues[player.color] = 0
 
         for yPos in range(self.board.ySize):
+            startPos = 0
+            lastColorX = 0
+            currColor = None
             for xPos in range(self.board.xSize):
-                color = None
-                color = self.board.horizontalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    playerValues[color] += 1
+                if startPos == (xPos - lineSize):
+                    startPos += 1
+                elif startPos < (xPos - lineSize):
+                    print("Something is wack")
 
-                color = None
-                color = self.board.verticalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    playerValues[color] += 1
+                if self.board.hasGamePiece(xPos, yPos):
+                    if currColor == None:
+                        currColor = self.board[xPos][yPos]
+                    elif currColor != self.board[xPos][yPos]:
+                        startPos = max(lastColorX + 1, startPos)
+                        currColor = self.board[xPos][yPos]
 
-                color = None
-                color = self.board.diagonalOpenLine(xPos, yPos, lineSize)
-                if color:
-                    playerValues[color] += 1
+                    lastColorX = xPos
 
-                color = None
-                color = self.board.diagonalOpenLine(xPos, yPos, lineSize, -1)
-                if color:
-                    playerValues[color] += 1
+                if currColor is not None:
+                    if (xPos - startPos) == (lineSize - 1) and (lastColorX >= startPos):
+                        playerValues[currColor] += 1
 
         return playerValues
 
 
-    def checkPlayerForks(self):
-        forkMaxSize = 5
-        forkMinSize = 4
-        playerValues = {}
-        for player in self.players:
-            playerValues[player.color] = 0
+    # def checkPlayerOpenLines(self):
+    #     lineSize = 4
+    #     playerValues = {}
+    #     for player in self.players:
+    #         playerValues[player.color] = 0
 
-        for yPos in range(self.board.ySize):
-            for xPos in range(self.board.xSize):
-                color = None
-                color = self.board.horizontalFork(xPos, yPos, forkMaxSize, forkMinSize)
-                if color:
-                    playerValues[color] += 1
+    #     for yPos in range(self.board.ySize):
+    #         for xPos in range(self.board.xSize):
+    #             color = None
+    #             color = self.board.horizontalOpenLine(xPos, yPos, lineSize)
+    #             if color:
+    #                 playerValues[color] += 1
 
-                # color = None
-                # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize)
-                # if color:
-                #     playerValues[color] += 1
+    #             color = None
+    #             color = self.board.verticalOpenLine(xPos, yPos, lineSize)
+    #             if color:
+    #                 playerValues[color] += 1
 
-                # color = None
-                # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize, -1)
-                # if color:
-                #     playerValues[color] += 1
+    #             color = None
+    #             color = self.board.diagonalOpenLine(xPos, yPos, lineSize)
+    #             if color:
+    #                 playerValues[color] += 1
 
-        return playerValues
+    #             color = None
+    #             color = self.board.diagonalOpenLine(xPos, yPos, lineSize, -1)
+    #             if color:
+    #                 playerValues[color] += 1
+
+    #     return playerValues
+
+
+    # def checkPlayerForks(self):
+    #     forkMaxSize = 5
+    #     forkMinSize = 4
+    #     playerValues = {}
+    #     for player in self.players:
+    #         playerValues[player.color] = 0
+
+    #     for yPos in range(self.board.ySize):
+    #         for xPos in range(self.board.xSize):
+    #             color = None
+    #             color = self.board.horizontalFork(xPos, yPos, forkMaxSize, forkMinSize)
+    #             if color:
+    #                 playerValues[color] += 1
+
+    #             # color = None
+    #             # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize)
+    #             # if color:
+    #             #     playerValues[color] += 1
+
+    #             # color = None
+    #             # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize, -1)
+    #             # if color:
+    #             #     playerValues[color] += 1
+
+    #     return playerValues
