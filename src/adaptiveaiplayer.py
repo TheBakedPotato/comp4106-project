@@ -96,55 +96,58 @@ class AdaptiveAIPlayer(Player):
         return value
 
 
-    def move(self, game, prevMove, prevGame):
-        move = None
-        
-        alpha = float("-inf")
-        beta = float("inf")
-
-        value = float("-inf")
-        moves = self.productionSystem(game, self)
-        random.shuffle(moves)
-        for currMove in moves:
-            currGame = game.copy()
-            currGame.applyMove(currMove)
-            currVal = self.minValue(currGame, self, self.searchDepth - 1, alpha, beta)
-            if (move is None) or (currVal > value):
-                move = currMove
-                value = currVal
-
-            alpha = max(value, alpha)
-
-        return move
-
-
     def moveOpponent(self, game, opponentMove):
+        moveScores = PriorityQueue()
+
         alpha = float("-inf")
         beta = float("inf")
-        moves = self.productionSystem(game, opponentMove)
+
+        moves = self.productionSystem(game, opponentMove.player)
         for move in moves:
             currGame = game.copy()
             currGame.applyMove(move)
-    # def move(self, game, prevMove, prevGame):
-    #     move = None
-    #     moveScores = PriorityQueue()
+            moveScores.put(Entry(move, self.minValue(currGame, opponentMove.player, self.searchDepth - 1, alpha, beta)))
 
-    #     alpha = float("-inf")
-    #     beta = float("inf")
-
-    #     if prevMove is not None:
-    #         self.moveOpponent(prevGame, prevMove)
-
-    #     moves = self.productionSystem(game)
-    #     for move in moves:
-    #         currGame = game.copy()
-    #         currGame.applyMove(move)
-    #         moveScores.put(Entry(move, self.minValue(currGame, self.searchDepth - 1, alpha, beta)))
+        rank = 0
+        while not moveScores.empty():
+            rank += 1
+            move = moveScores.get().item
+            if move == opponentMove:
+                break
 
 
-    #     moves.clear()
-    #     while not moveScores.empty():
-    #         currEntry = moveScores.get()
-    #         moves.append(currEntry.item)
+        rankIncrease = rank
+        if self.moveCount > 0:
+            rankIncrease /= self.moveCount
+            self.opponentRank += rankIncrease
+        else:
+            self.opponentRank = rank
 
-    #     return None
+
+    def move(self, game, prevMove, prevGame):
+        move = None
+        moveScores = PriorityQueue()
+
+        alpha = float("-inf")
+        beta = float("inf")
+
+        if prevMove is not None:
+            self.moveOpponent(prevGame, prevMove)
+            self.moveCount += 1
+
+        moves = self.productionSystem(game)
+        for move in moves:
+            currGame = game.copy()
+            currGame.applyMove(move)
+            moveScores.put(Entry(move, self.minValue(currGame, self, self.searchDepth - 1, alpha, beta)))
+
+        moves.clear()
+        while not moveScores.empty():
+            currEntry = moveScores.get()
+            moves.append(currEntry.item)
+
+        rank = self.opponentRank
+        if rank >= len(moves):
+            rank = len(moves) - 1
+        
+        return moves[rank]
