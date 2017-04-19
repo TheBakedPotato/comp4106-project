@@ -11,7 +11,6 @@ class ConnectFourGame:
         self.gameOver = False
 
 
-
     def copy(self):
         newGame = ConnectFourGame(self.players, self.board.xSize, self.board.ySize)
         newGame.playerIndex = self.playerIndex
@@ -63,91 +62,6 @@ class ConnectFourGame:
                 return False
 
         return True
-
-
-    # def isGameOver(self):
-    #     # MAYBE PUT THIS AS CLASS ATTRIBUTE?
-    #     lineSize = 4
-    #     ####################################
-
-    #     numFullColumns = 0
-    #     for column in self.board.board:
-    #         if len(column) == self.board.ySize:
-    #             numFullColumns += 1
-
-    #     if numFullColumns == self.board.xSize:
-    #         return True
-
-    #     gameOver = False
-
-    #     for y in range(self.board.ySize):
-    #         for x in range(self.board.xSize):
-    #             gameOver = gameOver or self.hasHorizontalLine(x, y, lineSize)
-    #             gameOver = gameOver or self.hasVerticalLine(x, y, lineSize)
-    #             # Checks diagonal lines up and right
-    #             gameOver = gameOver or self.hasDiagonalLine(x, y, lineSize)
-    #             # Checks diagonal lines up and left
-    #             gameOver = gameOver or self.hasDiagonalLine(x, y, lineSize, -1)
-    #             if gameOver:
-    #                 for player in self.players:
-    #                     if player.color == self.board[x][y]:
-    #                         self.winner = player
-    #                 return True
-
-    #     return False
-
-    def inHorizontalLine(self, color, xPos, yPos, lineSize):
-        checkBack = True
-        checkForward = True
-        lineCount = 1
-        for delta in range(1, lineSize):
-            backX = xPos - delta
-            forwardX = xPos + delta
-
-            if checkBack and self.board.hasGamePiece(backX, yPos) and self.board[backX][yPos] == color:
-                lineCount += 1
-            else:
-                checkBack = False
-
-            if checkForward and self.board.hasGamePiece(forwardX, yPos) and self.board[forwardX][yPos] == color:
-                lineCount += 1
-            else:
-                checkForward = False
-
-            if lineCount >= lineSize:
-                return True
-            elif not (checkBack or checkForward):
-                return False
-
-        print("ERROR: CHECKING inHorizontalLine")
-        return False
-
-
-    def inVerticalLine(self, color, xPos, yPos, lineSize):
-        checkDown = True
-        checkUp = True
-        lineCount = 1
-        for delta in range(1, lineSize):
-            downY = yPos - delta
-            upY = yPos + delta
-
-            if checkDown and self.board.hasGamePiece(xPos, downY) and self.board[xPos][downY] == color:
-                lineCount += 1
-            else:
-                checkDown = False
-
-            if checkUp and self.board.hasGamePiece(xPos, upY) and self.board[xPos][upY] == color:
-                lineCount += 1
-            else:
-                checkUp = False
-
-            if lineCount >= lineSize:
-                return True
-            elif not (checkDown or checkUp):
-                return False
-
-        print("ERROR: CHECKING inVerticalLine")
-        return False
 
 
     def inLine(self, color, xPos, yPos, lineSize):
@@ -269,7 +183,6 @@ class ConnectFourGame:
         xPos = move.column
         yPos = len(self.board[move.column]) - 1
         color = move.player.color
-        # if self.inHorizontalLine(color, xPos, yPos, lineSize) or self.inVerticalLine(color, xPos, yPos, lineSize):
         if self.inLine(color, xPos, yPos, lineSize):
             self.winner = move.player
             return True
@@ -281,7 +194,6 @@ class ConnectFourGame:
 
     def applyMove(self, move):
         self.board[move.column].append(move.player.color)
-        # self.gameOver = self.isGameOver()
         self.gameOver = self.isGameOver(move)
 
 
@@ -298,8 +210,7 @@ class ConnectFourGame:
         return nextPlayer
 
 
-    def playerHorizontalOpenLinesCount(self):
-        lineSize = 4
+    def playerHorizontalOpenLinesCount(self, lineSize):
         playerValues = {}
         currColor = None
         for player in self.players:
@@ -331,35 +242,31 @@ class ConnectFourGame:
         return playerValues
 
 
-    # def checkPlayerOpenLines(self):
-    #     lineSize = 4
-    #     playerValues = {}
-    #     for player in self.players:
-    #         playerValues[player.color] = 0
+    def playerVerticalOpenLinesCount(self, lineSize):
+        playerValues = {}
+        for player in self.players:
+            playerValues[player.color] = 0
 
-    #     for yPos in range(self.board.ySize):
-    #         for xPos in range(self.board.xSize):
-    #             color = None
-    #             color = self.board.horizontalOpenLine(xPos, yPos, lineSize)
-    #             if color:
-    #                 playerValues[color] += 1
+        for columnNum in range(0, self.board.xSize):
+            column = self.board[columnNum]
+            columnLen = len(column)
+            emptyTiles = self.board.ySize - columnLen
+            if columnLen != 0 and emptyTiles > 0:
+                color = self.board[columnNum][columnLen - 1]
+                if emptyTiles >= (lineSize - 1):
+                    playerValues[color] += 1
+                else:
+                    lastIndex = columnLen - (lineSize - emptyTiles)
+                    line = True
+                    for row in range(columnLen - 2, lastIndex - 1, -1):
+                        if self.board[columnNum][row] != color:
+                            line = False
+                            break
 
-    #             color = None
-    #             color = self.board.verticalOpenLine(xPos, yPos, lineSize)
-    #             if color:
-    #                 playerValues[color] += 1
+                    if line:
+                        playerValues[color] += 1
 
-    #             color = None
-    #             color = self.board.diagonalOpenLine(xPos, yPos, lineSize)
-    #             if color:
-    #                 playerValues[color] += 1
-
-    #             color = None
-    #             color = self.board.diagonalOpenLine(xPos, yPos, lineSize, -1)
-    #             if color:
-    #                 playerValues[color] += 1
-
-    #     return playerValues
+        return playerValues
 
 
     # def checkPlayerForks(self):
