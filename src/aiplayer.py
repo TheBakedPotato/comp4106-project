@@ -34,13 +34,16 @@ class AIPlayer(Player):
 
         horizontalCounts = game.playerHorizontalOpenLinesCount(lineSize)
         verticalCounts = game.playerVerticalOpenLinesCount(lineSize)
+        diagonalCounts = game.playerUpwardDiagonalOpenLinesCount(lineSize)
 
         value = horizontalCounts[self.color]
         value += verticalCounts[self.color]
+        value += diagonalCounts[self.color]
         for player in game.players:
             if player != self:
                 value -= horizontalCounts[player.color]
                 value -= verticalCounts[player.color]
+                value -= diagonalCounts[player.color]
 
         return value
 

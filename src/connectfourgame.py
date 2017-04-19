@@ -230,7 +230,7 @@ class ConnectFourGame:
         return playerValues
 
 
-    def playerDiagonalOpenLinesCount(self, lineSize):
+    def playerUpwardDiagonalOpenLinesCount(self, lineSize):
         playerValues = {}
         for player in self.players:
             playerValues[player.color] = 0
@@ -238,23 +238,60 @@ class ConnectFourGame:
         if (self.board.xSize < lineSize) or (self.board.ySize < lineSize):
             return playerValues
 
+        ################################################################################################
+        # Calculating all the diagonals going up starting at row of index 1
+        # Just increasing the row value
         maxRow = (self.board.ySize - lineSize)
         startColumn = 0
-
         for row in range(1, maxRow + 1):
-            maxYDelta = self.board.ySize - row - 1
+            maxYDelta = self.board.ySize - row
             startDelta = 0
             lastColorDelta = 0
             currColor = None
-            
-            for delta in range(min(self.board.xSize, maxYDelta) + 1):
+
+            for delta in range(min(self.board.xSize, maxYDelta)):
                 currRow = row + delta
                 currColumn = startColumn + delta
 
                 if startDelta == (delta - lineSize):
                     startDelta += 1
                 elif startDelta < (delta - lineSize):
-                    print("ERROR: playerDiagonalOpenLinesCount INCREMENTING DELTA")
+                    print("ERROR: playerDiagonalOpenLinesCount INCREMENTING DELTA FOR ROW")
+
+                if self.board.hasGamePiece(currColumn, currRow):
+                    if currColor is None:
+                        currColor = self.board[currColumn][currRow]
+                    elif currColor != self.board[currColumn][currRow]:
+                        startDelta = max(lastColorDelta + 1, startDelta)
+                        currColor = self.board[currColumn][currRow]
+
+                    lastColorDelta = delta
+                
+                if currColor is not None:
+                    if (delta - startDelta) == (lineSize - 1) and (lastColorDelta >= startDelta):
+                        playerValues[currColor] += 1
+        ################################################################################################
+
+        ################################################################################################
+        # Calculating all the diagonals going up starting at column of index 0
+        # Just increasing the column value
+        maxColumn = (self.board.xSize - lineSize)
+        startRow = 0
+        for column in range(0, maxColumn + 1):
+            maxXDelta = self.board.xSize - column
+            startDelta = 0
+            lastColorDelta = 0
+            currColor = None
+
+            for delta in range(min(self.board.ySize, maxXDelta)):
+                currColumn = column + delta
+                currRow = startRow + delta
+
+                deltaDiff = delta - lineSize
+                if startDelta == deltaDiff:
+                    startDelta += 1
+                elif startDelta < deltaDiff:
+                    print("ERROR: playerDiagonalOpenLinesCount INCREMENTING DELTA FOR COLUMN")
 
                 if self.board.hasGamePiece(currColumn, currRow):
                     if currColor is None:
@@ -268,31 +305,76 @@ class ConnectFourGame:
                 if currColor is not None:
                     if (delta - startDelta) == (lineSize - 1) and (lastColorDelta >= startDelta):
                         playerValues[currColor] += 1
+        ################################################################################################
 
         return playerValues
 
-    # def checkPlayerForks(self):
-    #     forkMaxSize = 5
-    #     forkMinSize = 4
-    #     playerValues = {}
-    #     for player in self.players:
-    #         playerValues[player.color] = 0
 
-    #     for yPos in range(self.board.ySize):
-    #         for xPos in range(self.board.xSize):
-    #             color = None
-    #             color = self.board.horizontalFork(xPos, yPos, forkMaxSize, forkMinSize)
-    #             if color:
-    #                 playerValues[color] += 1
+    def playerDownwardDiagonalOpenLinesCount(self, lineSize):
+        playerValues = {}
+        for player in self.players:
+            playerValues[player.color] = 0
 
-    #             # color = None
-    #             # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize)
-    #             # if color:
-    #             #     playerValues[color] += 1
+        if (self.board.xSize < lineSize) or (self.board.ySize < lineSize):
+            return playerValues
 
-    #             # color = None
-    #             # color = self.board.diagonalFork(xPos, yPos, forkMaxSize, forkMinSize, -1)
-    #             # if color:
-    #             #     playerValues[color] += 1
+        ################################################################################################
+        # Calculating all the diagonals going down starting at row of index 1
+        # Just increasing the row value
+        # maxRow = (self.board.ySize - lineSize)
+        # startColumn = self.board.xSize - 1
+        # for row in range(1, maxRow + 1):
+        #     maxYDelta = self.board.ySize - row
+        #     startDelta = 0
+        #     lastColorDelta = 0
+        #     currColor = None
 
-    #     return playerValues
+        #     for delta in range(min(self.board.xSize, maxYDelta)):
+        #         currRow = row + delta
+        #         currColumn = startColumn - delta
+
+        #         deltaDiff = delta - lineSize
+        #         if startDelta == deltaDiff:
+        #             startDelta -= 1
+
+        ################################################################################################
+        # Calculating all the diagonals going down starting at row of index 1
+        # Just increasing the row value
+                # print("Curr Column: {}, Curr Row: {}".format(currColumn, currRow))
+
+        ################################################################################################
+
+        ################################################################################################
+        # Calculating all the diagonals going down starting at column of index lineSize - 1
+        # Just increasing the column value
+        for column in range(lineSize - 1, self.board.xSize):
+            maxXDelta = column + 1
+            startDelta = 0
+            lastColorDelta = 0
+            currColor = None
+
+            for delta in range(min(self.board.ySize, maxXDelta)):
+                currColumn = column - delta
+                currRow = delta
+
+                deltaDiff = delta - lineSize
+                if startDelta == deltaDiff:
+                    startDelta += 1
+                elif startDelta < deltaDiff:
+                    print("ERROR")
+
+                if self.board.hasGamePiece(currColumn, currRow):
+                    if currColor is None:
+                        currColor = self.board[currColumn][currRow]
+                    elif currColor != self.board[currColumn][currRow]:
+                        startDelta = max(lastColorDelta + 1, startDelta)
+                        currColor = self.board[currColumn][currRow]
+
+                    lastColorDelta = delta
+
+                if currColor is not None:
+                    if (delta - startDelta) == (lineSize - 1) and (lastColorDelta >= startDelta):
+                        playerValues[currColor] += 1
+        ################################################################################################
+
+        return playerValues
