@@ -1,13 +1,17 @@
 import random
+from queue import PriorityQueue
 
 from player import Player
 from move import Move
+from entry import Entry
 
-class AIPlayer(Player):
+class AdaptiveAIPlayer(Player):
 
-    def __init__(self, color, searchDepth):
+    def __init__(self, color, searchDepth, maxHeuristicValue):
         super().__init__(color)
         self.searchDepth = searchDepth
+        self.maxHeuristicValue = maxHeuristicValue
+        self.opponentRank = -1
 
 
     def productionSystem(self, game, player=None):
@@ -50,7 +54,7 @@ class AIPlayer(Player):
 
         return value
 
-    
+
     def maxValue(self, game, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
             return self.simpleHeuristic(game)
@@ -93,21 +97,21 @@ class AIPlayer(Player):
 
     def move(self, game):
         move = None
-        
+        moveScores = PriorityQueue()
+
         alpha = float("-inf")
         beta = float("inf")
 
-        value = float("-inf")
         moves = self.productionSystem(game)
-        random.shuffle(moves)
-        for currMove in moves:
+        for move in moves:
             currGame = game.copy()
-            currGame.applyMove(currMove)
-            currVal = self.minValue(currGame, self.searchDepth - 1, alpha, beta)
-            if (move is None) or (currVal > value):
-                move = currMove
-                value = currVal
+            currGame.applyMove(move)
+            moveScores.put(Entry(move, self.minValue(currGame, self.searchDepth - 1, alpha, beta)))
 
-            alpha = max(value, alpha)
 
-        return move
+        moves.clear()
+        while not moveScores.empty():
+            currEntry = moveScores.get()
+            moves.append(currEntry.item)
+
+        return None
