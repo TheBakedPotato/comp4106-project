@@ -321,27 +321,38 @@ class ConnectFourGame:
         ################################################################################################
         # Calculating all the diagonals going down starting at row of index 1
         # Just increasing the row value
-        # maxRow = (self.board.ySize - lineSize)
-        # startColumn = self.board.xSize - 1
-        # for row in range(1, maxRow + 1):
-        #     maxYDelta = self.board.ySize - row
-        #     startDelta = 0
-        #     lastColorDelta = 0
-        #     currColor = None
+        maxRow = (self.board.ySize - lineSize)
+        startColumn = self.board.xSize - 1
+        for row in range(1, maxRow + 1):
+            maxYDelta = self.board.ySize - row
+            startDelta = 0
+            lastColorDelta = 0
+            currColor = None
 
-        #     for delta in range(min(self.board.xSize, maxYDelta)):
-        #         currRow = row + delta
-        #         currColumn = startColumn - delta
+            for delta in range(min(self.board.xSize, maxYDelta)):
+                currColumn = startColumn - delta
+                currRow = row + delta
 
-        #         deltaDiff = delta - lineSize
-        #         if startDelta == deltaDiff:
-        #             startDelta -= 1
+                deltaDiff = delta - lineSize
+                if startDelta == deltaDiff:
+                    startDelta += 1
+                elif startDelta < deltaDiff:
+                    print("ERROR 1")
 
-        ################################################################################################
-        # Calculating all the diagonals going down starting at row of index 1
-        # Just increasing the row value
+                if self.board.hasGamePiece(currColumn, currRow):
+                    if currColor is None:
+                        currColor = self.board[currColumn][currRow]
+                    elif currColor != self.board[currColumn][currRow]:
+                        startDelta = max(lastColorDelta + 1, startDelta)
+                        currColor = self.board[currColumn][currRow]
+
+                    lastColorDelta = delta
+
+                if currColor is not None:
+                    if (delta - startDelta) == (lineSize - 1) and (lastColorDelta >= startDelta):
+                        playerValues[currColor] += 1
+
                 # print("Curr Column: {}, Curr Row: {}".format(currColumn, currRow))
-
         ################################################################################################
 
         ################################################################################################
@@ -361,7 +372,7 @@ class ConnectFourGame:
                 if startDelta == deltaDiff:
                     startDelta += 1
                 elif startDelta < deltaDiff:
-                    print("ERROR")
+                    print("ERROR 2")
 
                 if self.board.hasGamePiece(currColumn, currRow):
                     if currColor is None:
