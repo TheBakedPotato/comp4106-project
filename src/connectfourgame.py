@@ -230,6 +230,47 @@ class ConnectFourGame:
         return playerValues
 
 
+    def playerDiagonalOpenLinesCount(self, lineSize):
+        playerValues = {}
+        for player in self.players:
+            playerValues[player.color] = 0
+
+        if (self.board.xSize < lineSize) or (self.board.ySize < lineSize):
+            return playerValues
+
+        maxRow = (self.board.ySize - lineSize)
+        startColumn = 0
+
+        for row in range(1, maxRow + 1):
+            maxYDelta = self.board.ySize - row - 1
+            startDelta = 0
+            lastColorDelta = 0
+            currColor = None
+            
+            for delta in range(min(self.board.xSize, maxYDelta) + 1):
+                currRow = row + delta
+                currColumn = startColumn + delta
+
+                if startDelta == (delta - lineSize):
+                    startDelta += 1
+                elif startDelta < (delta - lineSize):
+                    print("ERROR: playerDiagonalOpenLinesCount INCREMENTING DELTA")
+
+                if self.board.hasGamePiece(currColumn, currRow):
+                    if currColor is None:
+                        currColor = self.board[currColumn][currRow]
+                    elif currColor != self.board[currColumn][currRow]:
+                        startDelta = max(lastColorDelta + 1, startDelta)
+                        currColor = self.board[currColumn][currRow]
+
+                    lastColorDelta = delta
+
+                if currColor is not None:
+                    if (delta - startDelta) == (lineSize - 1) and (lastColorDelta >= startDelta):
+                        playerValues[currColor] += 1
+
+        return playerValues
+
     # def checkPlayerForks(self):
     #     forkMaxSize = 5
     #     forkMinSize = 4
