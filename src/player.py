@@ -6,7 +6,7 @@ class Player:
         self.color = color
         self.hashCode = hash(self.color)
 
-    def move(self, game):
+    def move(self, game, prevMove, preGame):
         return None
 
 

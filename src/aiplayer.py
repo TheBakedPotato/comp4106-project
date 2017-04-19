@@ -91,7 +91,7 @@ class AIPlayer(Player):
         return value
 
 
-    def move(self, game):
+    def move(self, game, prevMove, prevGame):
         move = None
         
         alpha = float("-inf")
