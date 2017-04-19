@@ -25,45 +25,6 @@ class ConnectFourGame:
         return self.board.validColumn(column)
 
 
-    def hasHorizontalLine(self, xPos, yPos, lineSize):
-        if not self.board.hasGamePiece(xPos, yPos) or (self.board.xSize - xPos) < lineSize:
-            return False
-
-        pieceColor = self.board[xPos][yPos]
-        for newXPos in range(xPos + 1, xPos + lineSize):
-            if not self.board.hasGamePiece(newXPos, yPos) or (self.board[newXPos][yPos] != pieceColor):
-                return False
-
-        return True
-
-
-    def hasVerticalLine(self, xPos, yPos, lineSize):
-        if not self.board.hasGamePiece(xPos, yPos) or (self.board.ySize - yPos) < lineSize:
-            return False
-
-        pieceColor = self.board[xPos][yPos]
-        for newYPos in range(yPos + 1, yPos + lineSize):
-            if not self.board.hasGamePiece(xPos, newYPos) or (self.board[xPos][newYPos] != pieceColor):
-                return False
-
-        return True
-
-
-    # Direction indicates the diagonal going left or right. 1 == right, -1 == left
-    def hasDiagonalLine(self, xPos, yPos, lineSize, direction=1):
-        if not self.board.hasGamePiece(xPos, yPos) or (self.board.ySize - yPos) < lineSize:
-            return False
-
-        pieceColor = self.board[xPos][yPos]
-        for delta in range(1, lineSize):
-            newXPos = xPos + (direction * delta)
-            newYPos = yPos + delta
-            if not self.board.hasGamePiece(newXPos, newYPos) or (self.board[newXPos][newYPos] != pieceColor):
-                return False
-
-        return True
-
-
     def inLine(self, color, xPos, yPos, lineSize):
         horizontalCount = 1
         verticalCount = 1
