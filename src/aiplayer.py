@@ -24,10 +24,13 @@ class AIPlayer(Player):
 
     def simpleHeuristic(self, game):
         if game.gameOver:
-            if game.winner is not None and game.winner == self:
-                return float("inf")
+            if game.winner is not None:
+                if game.winner == self:
+                    return float("inf")
+                else:
+                    return float("-inf")
             else:
-                return float("-inf")
+                return 0
 
         lineSize = 4
 
