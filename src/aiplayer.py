@@ -44,6 +44,7 @@ class AIPlayer(Player):
         value += verticalCounts[self.color]
         value += upwardDiagonalCounts[self.color]
         value += downwardDiagonalCounts[self.color]
+        value *= 5
         for player in game.players:
             if player != self:
                 value -= horizontalCounts[player.color]
@@ -54,63 +55,92 @@ class AIPlayer(Player):
         return value
 
     
-    def maxValue(self, game, depth, alpha, beta):
+    def maxValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return self.simpleHeuristic(game)
+            return Action(move, self.simpleHeuristic(game))
 
-        value = float("-inf")
-        moves = self.productionSystem(game)
+        action = None
+        moves = self.productionSystem(game, player)
         random.shuffle(moves)
         for currMove in moves:
             currGame = game.copy()
             currGame.applyMove(currMove)
-            value = max(value, self.minValue(currGame, depth - 1, alpha, beta))
-            if value >= beta:
-                return value
+            currAction = self.minValue(currGame, currMove, player, depth - 1, alpha, beta)
 
-            alpha = max(value, alpha)
+            if (action is None) or (currAction.value > action.value):
+                action = Action(currMove, currAction.value)
 
-        return value
+            if (action is not None) and (action.value >= beta):
+                return action
+
+            if (action is not None) and (action.value > alpha):
+                alpha = action.value
+
+        return action
 
 
-    def minValue(self, game, depth, alpha, beta):
+    def minValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return self.simpleHeuristic(game)
+            return Action(move, self.simpleHeuristic(game))
 
-        value = float("inf")
+        action = None
         for playerIndex in range(len(game.players)):
-            if game.players[playerIndex] != self:
-                moves = self.productionSystem(game, game.players[playerIndex])
+            if game.players[playerIndex] != player:
+                currPlayer = game.players[playerIndex]
+                moves = self.productionSystem(game, currPlayer)
                 random.shuffle(moves)
                 for currMove in moves:
                     currGame = game.copy()
                     currGame.applyMove(currMove)
-                    value = min(value, self.maxValue(currGame, depth - 1, alpha, beta))
-                    if value <= alpha:
-                        return value
+                    currAction = self.maxValue(currGame, currMove, player, depth - 1, alpha, beta)
 
-                    beta = min(value, beta)
+                    if (action is None) or (currAction.value < action.value):
+                        action = Action(currMove, currAction.value)
 
-        return value
+                    if (action is not None) and (action.value <= alpha):
+                        return action
+
+                    if (action is not None) and (action.value < beta):
+                        beta = action.value
+
+        return action
 
 
-    def move(self, game, prevMove, prevGame):
-        move = None
-        
+    # def move(self, game, prevMove, prevGame):
+    def move(self, game):
         alpha = float("-inf")
         beta = float("inf")
 
-        value = float("-inf")
-        moves = self.productionSystem(game)
-        random.shuffle(moves)
-        for currMove in moves:
-            currGame = game.copy()
-            currGame.applyMove(currMove)
-            currVal = self.minValue(currGame, self.searchDepth - 1, alpha, beta)
-            if (move is None) or (currVal > value):
-                move = currMove
-                value = currVal
+        action = self.maxValue(game, None, self, self.searchDepth, alpha, beta)
+        return action.move
 
-            alpha = max(value, alpha)
 
-        return move
+class Action:
+
+    def __init__(self, move, value):
+        self.move = move
+        self.value = value
+
+
+    def __eq__(self, other):
+        return self.value == other.value
+
+
+    def __ne__(self, other):
+        return not (self.value == other.value)
+
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+
+    def __le__(self, other):
+        return (self < other) or (self == other)
+
+
+    def __ge__(self, other):
+        return (self > other) or (self == other)
