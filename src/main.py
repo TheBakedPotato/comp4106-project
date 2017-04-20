@@ -19,7 +19,7 @@ simpleAI0 = AIPlayer(colors[0], 1)
 simpleAI1 = AIPlayer(colors[1], 1)
 mmAI0 = AIPlayer(colors[0], 5)
 mmAI1 = AIPlayer(colors[1], 5)
-ammAI0 = AdaptiveAIPlayer(colors[0], 1, 100)
+ammAI0 = AdaptiveAIPlayer(colors[0], 5, 100)
 ammAI1 = AdaptiveAIPlayer(colors[1], 5, 100)
 # players = [ human0 ]
 # players = [ human0, human1 ]
@@ -28,16 +28,21 @@ ammAI1 = AdaptiveAIPlayer(colors[1], 5, 100)
 # players = [ simpleAI0, simpleAI1 ]
 # players = [ simpleAI0, human1 ]
 # players = [ simpleAI0, mmAI1 ]
-# players = [ simpleAI0, ammAI1 ]
-players = [ mmAI0, ammAI1 ]
+players = [ simpleAI0, ammAI1 ]
+# players = [ mmAI0, ammAI1 ]
 # players = [ mmAI0, mmAI1 ]
+random.shuffle(players)
 game = ConnectFourGame(players, 7, 6)
 
-random.shuffle(players)
 
 running = True
 prevMove = None
 prevGame = None
+
+winCount = {}
+for player in players:
+    winCount[player.color] = 0
+count = 1
 
 while running:
 
@@ -56,22 +61,30 @@ while running:
 
             move = Move(player, column)
 
+        prevGame = game.copy()
         game.applyMove(move)
         prevMove = Move(move.player, move.column)
-        prevGame = game.copy()
-        # playerValues = game.playerDownwardDiagonalOpenLinesCount(4)
-        # print("PLAYER OPEN LINE VALUES")
-        # for player, value in playerValues.items():
-        #     print("Player: {}, Value: {}".format(player, value))
 
     else:
-        print("Game Over")
+        # print("Game Over")
         if game.winner:
-            print("The winner is: {}!".format(game.winner.color))
-        else:
-            print("The game was a draw!")
+            # print("The winner is: {}!".format(game.winner.color))
+            winCount[game.winner.color] += 1
+        # else:
+        #     print("The game was a draw!")
 
         ui.drawBoard(game.board)
-        running = False
+        if count > 1:
+            count -= 1
+        else:
+            running = False
 
-print("First Player: {}".format(players[0].color))
+        random.shuffle(players)
+        game = ConnectFourGame(players, 7, 6)
+        prevMove = None
+        prevGame = None
+
+print("Total Games: {}".format(50))
+for player, count in winCount.items():
+    print("Player {} Won: {}".format(player, count))
+# print("First Player: {}".format(players[0].color))
