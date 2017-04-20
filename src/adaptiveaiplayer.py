@@ -11,7 +11,7 @@ class AdaptiveAIPlayer(Player):
         super().__init__(color)
         self.searchDepth = searchDepth
         self.maxHeuristicValue = maxHeuristicValue
-        self.opponentRank = -1
+        self.opponentRank = 0
         self.moveCount = 0
 
 
@@ -131,18 +131,41 @@ class AdaptiveAIPlayer(Player):
     #     self.opponentRank = 1
 
 
-    # def move(self, game, prevMove, prevGame):
-    # def move(self, game):
-    #     alpha = float("-inf")
-    #     beta = float("inf")
+    def moveOpponent(self, game, opponentMove):
+        self.moveCount += 1
+        opponent = opponentMove.player
 
-    #     action = self.maxValue(game, None, self, self.searchDepth, alpha, beta)
-    #     return action.move
-
-
-    def move(self, game):
         alpha = float("-inf")
         beta = float("inf")
+        moves = self.productionSystem(game, opponent)
+        opponentActions = []
+        for move in moves:
+            currGame = game.copy()
+            currGame.applyMove(move)
+            action = Action(move, self.minValue(currGame, move, opponent, self.searchDepth - 1, alpha, beta).value)
+            opponentActions.append(action)
+        opponentActions = sorted(opponentActions)
+
+        movePos = 0
+        if len(opponentActions) > 1:
+            for pos in range(len(opponentActions)):
+                if opponentActions[pos].move == opponentMove:
+                    break
+                movePos += 1
+            
+            movePos = movePos / (len(opponentActions) - 1)
+        else:
+            movePos = 0.5
+
+        self.opponentRank = (self.opponentRank * (self.moveCount - 1) + movePos) / self.moveCount
+
+    
+    def move(self, game, prevMove, prevGame):
+        alpha = float("-inf")
+        beta = float("inf")
+
+        if prevMove is not None:
+            self.moveOpponent(prevGame, prevMove)
 
         playerActions = []
         moves = self.productionSystem(game, self)
@@ -153,7 +176,11 @@ class AdaptiveAIPlayer(Player):
             action = Action(move, self.minValue(currGame, move, self, self.searchDepth - 1, alpha, beta).value)
             playerActions.append(action)
         playerActions = sorted(playerActions)
-        return playerActions[len(playerActions) - 1].move
+
+        if len(playerActions) > 1:
+            return playerActions[round(self.opponentRank * (len(playerActions) - 1))].move
+        else:
+            return playerActions[0].move
 
 
 class Action:

@@ -106,8 +106,7 @@ class AIPlayer(Player):
         return action
 
 
-    # def move(self, game, prevMove, prevGame):
-    def move(self, game):
+    def move(self, game, prevMove, prevGame):
         alpha = float("-inf")
         beta = float("inf")
 
