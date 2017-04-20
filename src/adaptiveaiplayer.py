@@ -29,10 +29,13 @@ class AdaptiveAIPlayer(Player):
 
     def simpleHeuristic(self, game, player):
         if game.gameOver:
-            if game.winner is not None and game.winner == player:
-                return float("inf")
+            if game.winner is not None:
+                if game.winner == player:
+                    return float("inf")
+                else:
+                    return float("-inf")
             else:
-                return float("-inf")
+                return 0
 
         lineSize = 4
 
@@ -46,6 +49,7 @@ class AdaptiveAIPlayer(Player):
         value += verticalCounts[player.color]
         value += upwardDiagonalCounts[player.color]
         value += downwardDiagonalCounts[player.color]
+        value *= 5
         for currPlayer in game.players:
             if currPlayer != player:
                 value -= horizontalCounts[currPlayer.color]
@@ -56,98 +60,170 @@ class AdaptiveAIPlayer(Player):
         return value
 
 
-    def maxValue(self, game, player, depth, alpha, beta):
+    def maxValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return self.simpleHeuristic(game, player)
+            return Action(move, self.simpleHeuristic(game, player))
 
-        value = float("-inf")
+        action = None
         moves = self.productionSystem(game, player)
         random.shuffle(moves)
         for currMove in moves:
             currGame = game.copy()
             currGame.applyMove(currMove)
-            value = max(value, self.minValue(currGame, player, depth - 1, alpha, beta))
-            if value >= beta:
-                return value
+            currAction = self.minValue(currGame, currMove, player, depth - 1, alpha, beta)
 
-            alpha = max(value, alpha)
+            if (action is None) or (currAction.value > action.value):
+                action = Action(currMove, currAction.value)
 
-        return value
+            if (action is not None) and (action.value >= beta):
+                return action
+
+            if (action is not None) and (action.value > alpha):
+                alpha = action.value
+
+        return action
 
 
-    def minValue(self, game, player, depth, alpha, beta):
+    def minValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return self.simpleHeuristic(game, player)
+            return Action(move, self.simpleHeuristic(game, player))
 
-        value = float("inf")
+        action = None
         for playerIndex in range(len(game.players)):
             if game.players[playerIndex] != player:
-                moves = self.productionSystem(game, game.players[playerIndex])
+                currPlayer = game.players[playerIndex]
+                moves = self.productionSystem(game, currPlayer)
                 random.shuffle(moves)
                 for currMove in moves:
                     currGame = game.copy()
                     currGame.applyMove(currMove)
-                    value = min(value, self.maxValue(currGame, player, depth - 1, alpha, beta))
-                    if value <= alpha:
-                        return value
+                    currAction = self.maxValue(currGame, currMove, player, depth - 1, alpha, beta)
 
-                    beta = min(value, beta)
+                    if (action is None) or (currAction.value < action.value):
+                        action = Action(currMove, currAction.value)
 
-        return value
+                    if (action is not None) and (action.value <= alpha):
+                        return action
+
+                    if (action is not None) and (action.value < beta):
+                        beta = action.value
+
+        return action
 
 
-    def moveOpponent(self, game, opponentMove):
-        moveScores = PriorityQueue()
+    # def moveOpponent(self, game, opponentMove):
+    #     self.moveCount += 1
+    #     moveScores = PriorityQueue()
 
+    #     alpha = float("-inf")
+    #     beta = float("inf")
+
+    #     print("Opponent Move: {}")
+    #     moves = self.productionSystem(game, opponentMove.player)
+    #     # random.shuffle(moves)
+    #     for move in moves:
+    #         currGame = game.copy()
+    #         currGame.applyMove(move)
+    #         score = self.minValue(currGame, opponentMove.player, self.searchDepth - 1, alpha, beta)
+    #         moveScores.put(Entry(move, score))
+    #         print("Move: {}, Score: {}".format(move.column, score))
+
+    #     self.opponentRank = 1
+
+
+    # def move(self, game, prevMove, prevGame):
+    # def move(self, game):
+    #     alpha = float("-inf")
+    #     beta = float("inf")
+
+    #     action = self.maxValue(game, None, self, self.searchDepth, alpha, beta)
+    #     return action.move
+
+
+    def move(self, game):
         alpha = float("-inf")
         beta = float("inf")
 
-        moves = self.productionSystem(game, opponentMove.player)
+        playerActions = []
+        moves = self.productionSystem(game, self)
+        random.shuffle(moves)
         for move in moves:
             currGame = game.copy()
             currGame.applyMove(move)
-            moveScores.put(Entry(move, self.minValue(currGame, opponentMove.player, self.searchDepth - 1, alpha, beta)))
-
-        rank = 0
-        while not moveScores.empty():
-            rank += 1
-            move = moveScores.get().item
-            if move == opponentMove:
-                break
+            action = Action(move, self.minValue(currGame, move, self, self.searchDepth - 1, alpha, beta).value)
+            playerActions.append(action)
+        playerActions = sorted(playerActions)
+        return playerActions[len(playerActions) - 1].move
 
 
-        rankIncrease = rank
-        if self.moveCount > 0:
-            rankIncrease /= self.moveCount
-            self.opponentRank += rankIncrease
-        else:
-            self.opponentRank = rank
+class Action:
+
+    def __init__(self, move, value):
+        self.move = move
+        self.value = value
 
 
-    def move(self, game, prevMove, prevGame):
-        move = None
-        moveScores = PriorityQueue()
+    def __eq__(self, other):
+        return self.value == other.value
 
-        alpha = float("-inf")
-        beta = float("inf")
 
-        if prevMove is not None:
-            self.moveOpponent(prevGame, prevMove)
-            self.moveCount += 1
+    def __ne__(self, other):
+        return not (self.value == other.value)
 
-        moves = self.productionSystem(game)
-        for move in moves:
-            currGame = game.copy()
-            currGame.applyMove(move)
-            moveScores.put(Entry(move, self.minValue(currGame, self, self.searchDepth - 1, alpha, beta)))
 
-        moves.clear()
-        while not moveScores.empty():
-            currEntry = moveScores.get()
-            moves.append(currEntry.item)
+    def __lt__(self, other):
+        return self.value < other.value
 
-        rank = self.opponentRank
-        if rank >= len(moves):
-            rank = len(moves) - 1
-        
-        return moves[rank]
+
+    def __gt__(self, other):
+        return self.value > other.value
+
+
+    def __le__(self, other):
+        return (self < other) or (self == other)
+
+
+    def __ge__(self, other):
+        return (self > other) or (self == other)
+
+        # maxScore = 0
+        # moveScore = float("inf")
+        # moveRank = 0
+        # rank = 1
+        # scoreCount = 0
+        # while not moveScores.empty():
+        #     entry = moveScores.get()
+        #     # maxScore = entry.value
+        #     if entry.item == opponentMove:
+        #         # moveValue = entry.value
+        #         moveScore = entry.value
+        #         moveRank = rank
+        #     elif entry.value == moveScore:
+        #         scoreCount += 1
+        #     elif entry.value > moveScore:
+        #         break
+        #     rank += 1
+
+        # moveRank = (scoreCount / 2) + moveRank
+
+        # if len(moves) > 1:
+        #     rank = rank / len(moves)
+        #     self.opponentRank = (self.opponentRank * (self.moveCount - 1) + rank) / self.moveCount
+        # print(self.opponentRank)
+
+        # if len(moves) > 1:
+        #     moveRank = moveRank / len(moves)
+        #     self.opponentRank = (self.opponentRank * (self.moveCount - 1) + moveRank) / self.moveCount
+        # print(self.opponentRank)
+
+        # print(self.opponentRank)
+        # print("Move Value: {}, Max Score: {}".format(moveValue, maxScore))
+        # if maxScore == float("inf") or moveValue == float("inf"):
+        #     rank = 1
+        # elif moveValue == float("-inf") or maxScore == float("-inf") or maxScore == 0:
+        #     rank = 0
+        # else:
+        #     rank = moveValue / maxScore
+        # print("Rank: {}".format(rank))
+        # self.opponentRank = (self.opponentRank * (self.moveCount - 1) + rank) / self.moveCount
+        # print(self.opponentRank)
