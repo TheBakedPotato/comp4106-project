@@ -19,6 +19,28 @@
     \vfill
     \thispagestyle{empty}
 \end{titlepage}
+% X: Easy
+% O: Adaptive
+%Total Games: 150
+%Player O Won: 22
+%Player X Won: 28
+%Player X Won: 34
+%Player O Won: 16
+%Player O Won: 14
+%Player X Won: 36
+
+
+% X: Hard
+% O: Adaptive
+%Total Games: 150
+%Player O Won: 19
+%Player X Won: 31
+%Player O Won: 13
+%Player X Won: 37
+%Player O Won: 14
+%Player X Won: 36
+
+
 
 \section*{Problem Domain}
 
@@ -29,15 +51,17 @@ While having different difficulty options may allow the user to play against the
 Instead of the user deciding what difficulty the agent should play at, the agent adapts to the player's skill level. This will ensure that the agent is playing at a similar skill level as the player at all times. The agent will not be too difficult or too easy for the player giving them a more enjoyable game.
 
 \section*{Implementation}
-To implement the adaptive agent, AA, it needs to know how the other player is performing. 
 \subsection*{AI Techniques}
-For implementation, a modified Mini--Max Search will be used. Instead of the agent searching for the best move it can make given a certain heuristic, it will first consider the opponent's move. Every time the opponent makes a move, the agent will compare it too all other moves the player could have made.
 
-The agent will rank the moves the opponent makes compared to the optimal move. An average of the ranks of the opponent's moves will be updated by the agent after every move by the opponent. After the agent has computed the new rank average of the opponent, the agent will compute its possible moves. From its possible moves, it will select a move that is similarly ranked.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Adaptive Agent}
+For the Adaptive Agent, AA, to be adaptive, its goal is not perform optimally. Instead, its objective is to perform approximately on par as its opponent. The AA must rank all of its possible moves at a given state of the game and select the move that is ranked similarly to that of the opponent's moves. To get the ranking of each of the AA's moves, following the work by Missura and Gaertner, a modified version of the Mini-Max algorithm is used.
 
-To rank the moves, all the possible moves will be sorted with the optimal move at the end. The number of positions away from the optimal move a move is determines its rank.
+Instead of performing Mini-Max on the current state of the game, the AA first determines all its possible moves. It applies each move separately to the state and performs Mini-Max on each new state. Performing Mini-Max on each new state will provide a heuristic value for the applied move. The heuristic value for the move determines the rank of the move for the state. The AA then selects a move from the set that is ranked similarly to the opponent's moves.
 
-To increase the range of difficulty the agent has available, multiple heuristics can be used. If the opponent is consistently making optimal, or near optimal, moves based on the current heuristic, then the current heuristic may be swapped out with a better one if available. Conversely, if the player is making continually poor moves, the heuristic may be swapped out for a worse one.
+To evaluate the performance of the opponent, the same strategy is applied to the opponent's last move. Before the AA makes its move, it evaluates all the possible moves that could have been made by the opponent. It ranks all the moves the same as way as it does for its own move and adds it to a running average of the performance of the opponent.
+
+The heuristic used for the AA is modified as well. If a player comes across a winning game state, the heuristic returns positive or negative infinity in the event the player wins or loses, respectively. As discussed by Missura and Gaertner, a winning state fewer moves away is more desirable, and therefore is ranked higher, than a winning state that requires more moves to reach. Similarly, a losing state more moves away is more desirable than losing state very close.
 
 
 \end{document}

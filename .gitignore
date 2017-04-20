@@ -1,2 +1,6 @@
 *.sublime-*
 src/__pycache__
+*.pdf
+*.log
+*.aux
+*.backup
