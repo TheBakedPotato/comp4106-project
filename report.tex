@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage}
+\usepackage{enumerate}
+
+\title{
+    \vfill
+    Adaptive Difficulty in Connect Four \\
+    COMP 4106
+}
+\author{
+    Juhandr\'{e} Knoetze - 100882772
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \maketitle
+    \vfill
+    \thispagestyle{empty}
+\end{titlepage}
+
+\section*{Problem Domain}
+
+
+\section*{Motivation}
+While having different difficulty options may allow the user to play against the AI agent at a better matching skill level, it does not guarantee the player will be a perfect match for the agent. It is possible the difficulty levels provided do not account for all skill levels of players. Players may find themselves unskilled or too skilled for any of the options provided, leaving them with a less enjoyable game.
+
+Instead of the user deciding what difficulty the agent should play at, the agent adapts to the player's skill level. This will ensure that the agent is playing at a similar skill level as the player at all times. The agent will not be too difficult or too easy for the player giving them a more enjoyable game.
+
+\section*{Implementation}
+To implement the adaptive agent, AA, it needs to know how the other player is performing. 
+\subsection*{AI Techniques}
+For implementation, a modified Mini--Max Search will be used. Instead of the agent searching for the best move it can make given a certain heuristic, it will first consider the opponent's move. Every time the opponent makes a move, the agent will compare it too all other moves the player could have made.
+
+The agent will rank the moves the opponent makes compared to the optimal move. An average of the ranks of the opponent's moves will be updated by the agent after every move by the opponent. After the agent has computed the new rank average of the opponent, the agent will compute its possible moves. From its possible moves, it will select a move that is similarly ranked.
+
+To rank the moves, all the possible moves will be sorted with the optimal move at the end. The number of positions away from the optimal move a move is determines its rank.
+
+To increase the range of difficulty the agent has available, multiple heuristics can be used. If the opponent is consistently making optimal, or near optimal, moves based on the current heuristic, then the current heuristic may be swapped out with a better one if available. Conversely, if the player is making continually poor moves, the heuristic may be swapped out for a worse one.
+
+
+\end{document}

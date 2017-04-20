@@ -27,13 +27,14 @@ class AdaptiveAIPlayer(Player):
         return moves
 
 
-    def simpleHeuristic(self, game, player):
+    def simpleHeuristic(self, game, player, depth):
         if game.gameOver:
             if game.winner is not None:
+                value = self.maxHeuristicValue - (self.searchDepth - depth)
                 if game.winner == player:
-                    return float("inf")
+                    return value
                 else:
-                    return float("-inf")
+                    return (value * -1)
             else:
                 return 0
 
@@ -62,7 +63,7 @@ class AdaptiveAIPlayer(Player):
 
     def maxValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return Action(move, self.simpleHeuristic(game, player))
+            return Action(move, self.simpleHeuristic(game, player, depth))
 
         action = None
         moves = self.productionSystem(game, player)
@@ -86,7 +87,7 @@ class AdaptiveAIPlayer(Player):
 
     def minValue(self, game, move, player, depth, alpha, beta):
         if (depth == 0) or (game.gameOver):
-            return Action(move, self.simpleHeuristic(game, player))
+            return Action(move, self.simpleHeuristic(game, player, depth))
 
         action = None
         for playerIndex in range(len(game.players)):
@@ -109,26 +110,6 @@ class AdaptiveAIPlayer(Player):
                         beta = action.value
 
         return action
-
-
-    # def moveOpponent(self, game, opponentMove):
-    #     self.moveCount += 1
-    #     moveScores = PriorityQueue()
-
-    #     alpha = float("-inf")
-    #     beta = float("inf")
-
-    #     print("Opponent Move: {}")
-    #     moves = self.productionSystem(game, opponentMove.player)
-    #     # random.shuffle(moves)
-    #     for move in moves:
-    #         currGame = game.copy()
-    #         currGame.applyMove(move)
-    #         score = self.minValue(currGame, opponentMove.player, self.searchDepth - 1, alpha, beta)
-    #         moveScores.put(Entry(move, score))
-    #         print("Move: {}, Score: {}".format(move.column, score))
-
-    #     self.opponentRank = 1
 
 
     def moveOpponent(self, game, opponentMove):
@@ -212,45 +193,3 @@ class Action:
 
     def __ge__(self, other):
         return (self > other) or (self == other)
-
-        # maxScore = 0
-        # moveScore = float("inf")
-        # moveRank = 0
-        # rank = 1
-        # scoreCount = 0
-        # while not moveScores.empty():
-        #     entry = moveScores.get()
-        #     # maxScore = entry.value
-        #     if entry.item == opponentMove:
-        #         # moveValue = entry.value
-        #         moveScore = entry.value
-        #         moveRank = rank
-        #     elif entry.value == moveScore:
-        #         scoreCount += 1
-        #     elif entry.value > moveScore:
-        #         break
-        #     rank += 1
-
-        # moveRank = (scoreCount / 2) + moveRank
-
-        # if len(moves) > 1:
-        #     rank = rank / len(moves)
-        #     self.opponentRank = (self.opponentRank * (self.moveCount - 1) + rank) / self.moveCount
-        # print(self.opponentRank)
-
-        # if len(moves) > 1:
-        #     moveRank = moveRank / len(moves)
-        #     self.opponentRank = (self.opponentRank * (self.moveCount - 1) + moveRank) / self.moveCount
-        # print(self.opponentRank)
-
-        # print(self.opponentRank)
-        # print("Move Value: {}, Max Score: {}".format(moveValue, maxScore))
-        # if maxScore == float("inf") or moveValue == float("inf"):
-        #     rank = 1
-        # elif moveValue == float("-inf") or maxScore == float("-inf") or maxScore == 0:
-        #     rank = 0
-        # else:
-        #     rank = moveValue / maxScore
-        # print("Rank: {}".format(rank))
-        # self.opponentRank = (self.opponentRank * (self.moveCount - 1) + rank) / self.moveCount
-        # print(self.opponentRank)
