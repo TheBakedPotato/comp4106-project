@@ -53,7 +53,7 @@
 
 
 \section*{Problem Domain}
-
+The work is based on developing an adaptive AI agent that will try to match the skill level of an opponent in a game of Connect Four. The adaptive agent will not make optimal moves, but instead make moves that best match the skill level of the opponent.
 
 
 \section*{Motivation and Previous Work}
@@ -78,13 +78,13 @@ For end states, if it is a winning state for the player, then positive infinity 
 
 
 \subsubsection*{Adaptive Agent}
-For the Adaptive Agent, AA, to be adaptive, its goal is not perform optimally. Instead, its objective is to perform approximately on par as its opponent. The AA must rank all of its possible moves at a given state of the game and select the move that is ranked similarly to that of the opponent's moves. To get the ranking of each of the AA's moves, following the work by Missura and Gaertner, a modified version of the Mini-Max algorithm is used.
+For the Adaptive Agent, AA, to be adaptive, its goal is not to perform optimally. Instead, its objective is to perform approximately on par with its opponent. The AA must rank all of its possible moves at a given state of the game and select the move that is ranked similarly to that of the opponent's moves. To get the ranking of each of the AA's moves, following the work by Missura and Gaertner, a modified version of the Mini-Max algorithm is used.
 
 Instead of performing Mini-Max on the current state of the game, the AA first determines all its possible moves. Since the AA was built on the Hard agent, the search depth performed by the AA is 5 as well for each move. It applies each move separately to the state and performs Mini-Max on each new state. Performing Mini-Max on each new state will provide a heuristic value for the applied move. Since each move has a respective heuristic value, the moves can be ranked against each other. The AA then selects a move from the set that is ranked similarly to the opponent's moves.
 
 To evaluate the performance of the opponent, the same strategy is applied to the opponent's last move. Before the AA makes its move, it evaluates all the possible moves that could have been made by the opponent. It ranks all the moves the same as way as it does for its own move and adds it to a running average of the performance of the opponent.
 
-The opponent's rank is calculated as an average of all the ranks of the opponent's moves made at a given point. The rank of a move is calculated as a percent of the total number of moves available at a the given state. With the moves ordered worst to best, the index of the move is found. The move's index is then divided by the highest index. Therefore, if the best move possible was chosen, a rank value of 1 will be given to the move. Similarly, if the worst move was made, then it will be given a rank of 0. When the AA wishes to select a move based on the opponent's rank, it multiplies the rank to the highest index for the list of available moves, and uses that index to select the move.
+The opponent's rank is calculated as an average of all the ranks of the opponent's moves made at a given point. The rank of a move is calculated as a percent of the total number of moves available at a the given state. With the moves ordered worst to best, the index of the move is found. The move's index is then divided by the highest index. Therefore, if the best move possible was chosen, a rank value of 1 will be given to the move. Similarly, if the worst move was made, then it will be given a rank of 0. When the AA wishes to select a move based on the opponent's rank, it multiplies the rank by the highest index of the list of available moves, and uses that index to select the move.
 
 The heuristic used for the AA is modified as well. If a player comes across a winning game state, the heuristic returns positive or negative infinity in the event the player wins or loses, respectively. As discussed by Missura and Gaertner, a winning state fewer moves away is more desirable, and therefore is ranked higher, than a winning state that requires more moves to reach. Similarly, a losing state more moves away is more desirable than losing state very close. Since positive and negative cannot be changed to represent the depth of a winning state, another value is required. A maximum heuristic value is required that can be adjusted to illustrate the depth of the winning state. Since the used heuristic has a value in range of (55, -55), and the search depth of the AA is 5, a max heuristic of 100 is adequate. If a winning state is found at 3 moves away, then it would have a value of 100 - 3, or 97. A losing state of 4 moves away would have a heuristic value of 4 - 100 = -96.
 
@@ -97,16 +97,23 @@ The heuristic used for the AA is modified as well. If a player comes across a wi
         \hline
         Easy vs Hard & 4\% & 77.33\% & 18.67\% \\
         \hline
-        Easy vs Adaptive & 34.67\% & 65.33\% & 0\% \\
+        Adaptive vs Easy & 34.67\% & 65.33\% & 0\% \\
         \hline
-        Hard vs Adaptive & 30.67\% & 69.33\% & 0\% \\
+        Adaptive vs Hard & 30.67\% & 69.33\% & 0\% \\
         \hline
     \end{tabular}
 \end{center}
 
-Each agent was run against the other agents for 150 games. The hard agent is clearly more skilled than the easy agent. However, when the adaptive agent played against the the Easy and Hard agents, it had a similar win rate. While the AA did not play perfectly on par as its opponent agent, it seems the AA played at different difficulties to win a similar amount against different skilled agents.
+Each agent was run against the other agents for 150 games. The hard agent is clearly more skilled than the easy agent. However, when the adaptive agent played against the the Easy and Hard agents, it had a similar win rate. While the AA did not play perfectly on par with its opponent agent, it seems the AA played at different difficulties to win a similar amount against different skilled agents.
 
 The adaptive agent may have performed better if it had a higher search depth. That will allow it to have a more accurate heuristic value for the possible moves. However, the depth was restricted to 5 due to performance reasons. Based on the current implementation, using higher search depths took too long to perform the next move as it has to do Mini-Max on two agents, without the pruning at the root for every move.
 
+
+\begin{thebibliography}{9}
+\bibitem{Missura}
+    O. Missura, T. Gaertner
+    \emph{Online Adaptive Agent for Connect Four}
+    \texttt{https://pdfs.semanticscholar.org/688a/cf4b17be0a08d026c993952d344a1a180fc2.pdf}
+\end{thebibliography}
 
 \end{document}
