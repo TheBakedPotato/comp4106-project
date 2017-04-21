@@ -60,6 +60,8 @@ While having different difficulty options may allow the user to play against the
 
 Instead of the user deciding what difficulty the agent should play at, the agent adapts to the player's skill level. This will ensure that the agent is playing at a similar skill level as the player at all times. The agent will not be too difficult or too easy for the player giving them a more enjoyable game.
 
+The work for the report is based on work done previously by Missura and Gaertner in their paper ``Online Adaptive Agent for Connect Four''.
+
 \section*{Implementation}
 To implement the AI agents in Connect Four, the Min-Max algorithm was used with alpha-beta pruning.
 
@@ -102,6 +104,8 @@ The heuristic used for the AA is modified as well. If a player comes across a wi
 \end{center}
 
 Each agent was run against the other agents for 150 games. The hard agent is clearly more skilled than the easy agent. However, when the adaptive agent played against the the Easy and Hard agents, it had a similar win rate. While the AA did not play perfectly on par as its opponent agent, it seems the AA played at different difficulties to win a similar amount against different skilled agents.
+
+The adaptive agent may have performed better if it had a higher search depth. That will allow it to have a more accurate heuristic value for the possible moves. However, the depth was restricted to 5 due to performance reasons. Based on the current implementation, using higher search depths took too long to perform the next move as it has to do Mini-Max on two agents, without the pruning at the root for every move.
 
 
 \end{document}
