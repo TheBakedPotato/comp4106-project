@@ -40,28 +40,68 @@
 %Player O Won: 14
 %Player X Won: 36
 
+% X: Easy
+% O: Hard
+%Total Games: 150
+%Player X Won: 0
+%Player O Won: 41
+%Player X Won: 3
+%Player O Won: 35
+%Player O Won: 40
+%Player X Won: 3
+
 
 
 \section*{Problem Domain}
 
 
-\section*{Motivation}
+\section*{Motivation and Previous Work}
 While having different difficulty options may allow the user to play against the AI agent at a better matching skill level, it does not guarantee the player will be a perfect match for the agent. It is possible the difficulty levels provided do not account for all skill levels of players. Players may find themselves unskilled or too skilled for any of the options provided, leaving them with a less enjoyable game.
 
 Instead of the user deciding what difficulty the agent should play at, the agent adapts to the player's skill level. This will ensure that the agent is playing at a similar skill level as the player at all times. The agent will not be too difficult or too easy for the player giving them a more enjoyable game.
 
 \section*{Implementation}
-\subsection*{AI Techniques}
+To implement the AI agents in Connect Four, the Min-Max algorithm was used with alpha-beta pruning.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Adaptive Agent}
+\subsubsection*{Agents}
+Two agents were implemented with the Mini-Max algorithm, other than the Adaptive Agent. The two agents are identical in Implementation as they both use Mini-Max and use the same heuristic. The first agent, referred to as Easy, only has a search depth of 1. The second agent, referred to as Hard, has a search depth of 5. This provides two different difficulties to test the adaptive agent against.
+
+\subsubsection*{Heuristic}
+The heuristic used for the Mini-Max algorithm is a simpler version of the one used by Missura and Gaertner. It only depends on the count of open lines of the players, without what Missura and Gaertner explain as forks. An open line of a player is 4 connected tiles aligned horizontally, or diagonally where 3 or less tiles are controlled by one player and none are controlled by the other player in that line. Therefore, the remaining tiles should be empty. For vertical open lines, a player is only granted 1 open line if their piece is at the top and there is sufficient empty tiles above it to form a line of 4. A player is only awarded one open line for vertical lines since it takes a single opponent piece to close the open line.
+
+The heuristic value of a state is all the open lines of the player, multiplied by 5, and then subtracted by the total open lines of the opponent. The opponent open lines are subtracted because it allows the player to be aware of the opponent's standing. The player's open lines are multiplied by 5 because it adds more weight to the number of player open lines. This encourages the AI to play more offensively as if it has a choice between lowering the number of open lines of the opponent, or increasing its own open lines, it will increase its own open lines. While testing, increasing the weight of the player open lines was found to lead to fewer draws and ensure a winner at the end of each game.
+
+For end states, if it is a winning state for the player, then positive infinity is returned. This ensures they will select the move that leads to a win. If a losing state is found, negative infinity is returned. Regardless of any other factors, if it is a losing state, it is the least favorable state and therefore it will never be chosen unless no other option is available. The event of a draw, 0 is returned since the players are exactly even at that point.
+
+
+\subsubsection*{Adaptive Agent}
 For the Adaptive Agent, AA, to be adaptive, its goal is not perform optimally. Instead, its objective is to perform approximately on par as its opponent. The AA must rank all of its possible moves at a given state of the game and select the move that is ranked similarly to that of the opponent's moves. To get the ranking of each of the AA's moves, following the work by Missura and Gaertner, a modified version of the Mini-Max algorithm is used.
 
-Instead of performing Mini-Max on the current state of the game, the AA first determines all its possible moves. It applies each move separately to the state and performs Mini-Max on each new state. Performing Mini-Max on each new state will provide a heuristic value for the applied move. The heuristic value for the move determines the rank of the move for the state. The AA then selects a move from the set that is ranked similarly to the opponent's moves.
+Instead of performing Mini-Max on the current state of the game, the AA first determines all its possible moves. Since the AA was built on the Hard agent, the search depth performed by the AA is 5 as well for each move. It applies each move separately to the state and performs Mini-Max on each new state. Performing Mini-Max on each new state will provide a heuristic value for the applied move. Since each move has a respective heuristic value, the moves can be ranked against each other. The AA then selects a move from the set that is ranked similarly to the opponent's moves.
 
 To evaluate the performance of the opponent, the same strategy is applied to the opponent's last move. Before the AA makes its move, it evaluates all the possible moves that could have been made by the opponent. It ranks all the moves the same as way as it does for its own move and adds it to a running average of the performance of the opponent.
 
-The heuristic used for the AA is modified as well. If a player comes across a winning game state, the heuristic returns positive or negative infinity in the event the player wins or loses, respectively. As discussed by Missura and Gaertner, a winning state fewer moves away is more desirable, and therefore is ranked higher, than a winning state that requires more moves to reach. Similarly, a losing state more moves away is more desirable than losing state very close.
+The opponent's rank is calculated as an average of all the ranks of the opponent's moves made at a given point. The rank of a move is calculated as a percent of the total number of moves available at a the given state. With the moves ordered worst to best, the index of the move is found. The move's index is then divided by the highest index. Therefore, if the best move possible was chosen, a rank value of 1 will be given to the move. Similarly, if the worst move was made, then it will be given a rank of 0. When the AA wishes to select a move based on the opponent's rank, it multiplies the rank to the highest index for the list of available moves, and uses that index to select the move.
+
+The heuristic used for the AA is modified as well. If a player comes across a winning game state, the heuristic returns positive or negative infinity in the event the player wins or loses, respectively. As discussed by Missura and Gaertner, a winning state fewer moves away is more desirable, and therefore is ranked higher, than a winning state that requires more moves to reach. Similarly, a losing state more moves away is more desirable than losing state very close. Since positive and negative cannot be changed to represent the depth of a winning state, another value is required. A maximum heuristic value is required that can be adjusted to illustrate the depth of the winning state. Since the used heuristic has a value in range of (55, -55), and the search depth of the AA is 5, a max heuristic of 100 is adequate. If a winning state is found at 3 moves away, then it would have a value of 100 - 3, or 97. A losing state of 4 moves away would have a heuristic value of 4 - 100 = -96.
+
+
+\subsection*{Results}
+\begin{center}
+    \begin{tabular}{ | c | c | c | c | }
+        \hline
+        Agent 1 vs Agent 2 & Agent 1 Win & Agent 2 Win & Draws \\
+        \hline
+        Easy vs Hard & 4\% & 77.33\% & 18.67\% \\
+        \hline
+        Easy vs Adaptive & 34.67\% & 65.33\% & 0\% \\
+        \hline
+        Hard vs Adaptive & 30.67\% & 69.33\% & 0\% \\
+        \hline
+    \end{tabular}
+\end{center}
+
+Each agent was run against the other agents for 150 games. The hard agent is clearly more skilled than the easy agent. However, when the adaptive agent played against the the Easy and Hard agents, it had a similar win rate. While the AA did not play perfectly on par as its opponent agent, it seems the AA played at different difficulties to win a similar amount against different skilled agents.
 
 
 \end{document}
