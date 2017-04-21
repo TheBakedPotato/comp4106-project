@@ -32,6 +32,54 @@ class TextUI:
         print(textBoard.draw())
 
 
+    def mainMenu(self):
+        option = None
+
+        while option is None:
+            try:
+                print("Please make a selection:")
+                print("Play a Game - 1")
+                print("Quit        - 2")
+                raw = input("Your Selection: ")
+                option = int(raw)
+            except ValueError:
+                self.invalidInput(raw)
+                option = None
+
+        return option
+
+    def pickPlayerType(self):
+        option = None
+
+        while option is None:
+            try:
+                print("Human Player    - 1")
+                print("Easy Player     - 2")
+                print("Hard Player     - 3")
+                print("Adaptive Player - 4")
+                raw = input("Your Selection: ")
+                option = int(raw)
+            except ValueError:
+                self.invalidInput(raw)
+                option = None
+
+        return option
+
+    def playerSelections(self, playerTypes):
+        for player in playerTypes:
+            print("Player: {}, Color: {}".format(player[0], player[1]))
+
+
+    def gameOverWithWinner(self, player):
+        print("Game Over")
+        print("WINNER: {}".format(player.color))
+
+
+    def gameOverDraw(self):
+        print("Game Over")
+        print("DRAW!")
+
+
     def getColumn(self):
         column = None
 
